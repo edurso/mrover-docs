@@ -20,6 +20,8 @@ teleoperation
 |       |   └── urdf  
 |       └── src  
 |           ├── components  
+|           |   ├── ControllerDataTable
+|           |   └── three
 |           ├── composables  
 |           ├── router  
 |           ├── stores  
@@ -55,6 +57,7 @@ Contains code for the frontend.
 
 ```src``` contains all the code for the frontend.
 * ```components``` contains Vue components.
+  * ```three``` contains 3D rover display code.
 * ```composables``` contains reusable logic.
 * ```router``` manages paths to views.
 * ```stores``` contains code that handles Pinia stores.
