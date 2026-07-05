@@ -184,6 +184,8 @@ export default defineConfig({
             { label: 'Tailwind Introduction', slug: 'teleop/tailwind-introduction' },
             { label: 'Teleop Codebase Organization', slug: 'teleop/organization' },
             { label: 'GUI Style Checking', slug: 'teleop/gui-style-checking' },
+            { label: 'Websockets Introduction', slug: 'teleop/websockets-introduction'},
+            { label: 'Camera Client', slug: 'teleop/camera-client' },
             { label: 'Teleop Starter Project', slug: 'teleop/starter-project' },
             { label: 'Teleop FAQ', slug: 'teleop/faq' },
             { label: 'Downloading Offline Map', slug: 'teleop/downloading-offline-map' },
