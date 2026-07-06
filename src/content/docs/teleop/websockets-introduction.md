@@ -2,8 +2,6 @@
 title: "Websockets Introduction"
 ---
 
-### (TODO-ME change starter project)
-
 ## Overview
 
 **WebSocket** is a networking protocol, like HTTP. It uses WebSocket**s** to provide real-time communication between computers. The main way we use them is to forward ROS topics that have been received by the backend to the frontend, however, some of our WebSocket's don't involve ROS at all. In any case, Websockets allows for 2-way exchanges between our frontend and backend.
@@ -42,6 +40,8 @@ Websockets must first be initialized before use. Typically, this is done in the 
 setupWebSocket('websocket_name')
 closeWebSocket('websocket_name')
 ```
+
+Active WebSockets should have indicators in the top right of the basestation GUI. Red (RX) indicates a receive, while green (TX) indicates a transmit.
 
 ## Websocket Creation and Structure
 

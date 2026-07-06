@@ -5,10 +5,10 @@ title: "Teleop Starter Project"
 ## Introduction
 
 Here, you will complete a Vue component by:
-* Creating page elements.
-* Formatting page elements.
-* Importing other components (```ArmControls``` and ```Rover3D```).
-* Sending/receiving messages to/from the backend.
+- Creating page elements.
+- Formatting page elements.
+- Importing other components (```ArmControls``` and ```Rover3D```).
+- Sending/receiving messages to/from the backend.
 
 The tasks you complete in this project will be similar to tasks that you see in the future. Don't be afraid to ask questions if you can't understand something, or are just curious. At a quick glance, the teleop system may seem simple, but there are a lot of moving parts.
 
@@ -17,11 +17,12 @@ The tasks you complete in this project will be similar to tasks that you see in 
 ## Getting Started
 
 ### Opening the Code
+
 First, go to [Teleop Quickstart](quickstart.md) and make sure your environment is set up. Critically, make sure you've run ```./build.sh``` and have all necessary dependencies.
 
-Open up a terminal, and type ```mrover```. Then: 
+Open up a terminal, and type ```mrover```. Then:  
 
-Switch/go to the branch that has the starter project code: 
+Switch/go to the branch that has the starter project code:  
 
 ```bash
 git switch teleop-starter-2026
@@ -33,20 +34,22 @@ Copy it into a new branch:
 git switch -c <your-initials>/starter-project-2026
 example: git switch -c km/starter-project-2026
 ```
+
 :::note
 Whenever you create a new feature, you should make a new branch and follow the naming convention of ```<your-initials>/<feature name>```. You'll often switch from main, but not always.
 :::
-
 
 Now you (hopefully) have the starter code ready to be worked on. But how do you run and debug it?  
 
 ### Running the Code
 
 Go to the url ```http://localhost:8080/starter``` in your browser. You should see an error page. This is because it is trying to access a server on and IP address that doesn't have any - ```localhost``` a.k.a. ```127.0.0.1``` a.k.a. **your** computer. To create the server it needs, go to your terminal, and run
+
 ```bash
 mrover
 ros2 launch mrover basestation.launch.py mode:=dev
 ```
+
 :::note
 ```mode:=dev``` launches in development mode. Without it, the basestation will launch in production mode and in a new window.
 :::
@@ -54,8 +57,8 @@ ros2 launch mrover basestation.launch.py mode:=dev
 This launches both the frontend and the backend. Now once you go back to your browser, you should see a webpage with a header and some text with "Hello World!" in it after reloading. If not, make sure you did everything in [Teleop Quickstart](quickstart.md), or ask for help.
 
 :::note
-* The ```/starter``` part of the url specifies that you are on the "Starter" page of the basestation. You can remove it to see the main page.  
-* The ```:8080``` part of the url is the port number. It functions as a sort of "id" for the server on the particular computer.
+- The ```/starter``` part of the url specifies that you are on the "Starter" page of the basestation. You can remove it to see the main page.  
+- The ```:8080``` part of the url is the port number. It functions as a sort of "id" for the server on the particular computer.
 :::
 
 ---
@@ -63,10 +66,12 @@ This launches both the frontend and the backend. Now once you go back to your br
 ## Vue Files and Editing
 
 Now, open up ```StarterProject.vue``` in a code editor. It's easiest to just run this in a new terminal:
+
 ```bash
 mrover
 code .
 ```
+
 Then press **ctrl-p** and type the file's name to search for it. It should look something like this:  
 
 ```html
@@ -84,11 +89,13 @@ Then press **ctrl-p** and type the file's name to search for it. It should look 
 
 Let's add a button to it.  
 Delete the ```<h1>``` and replace the ```// TODO add button``` with this code:
+
 ```html
 <button class="btn btn-primary">
   Hello button!
 </button>
 ```
+
 Now, you have a button that does absolutely nothing! Note that if you go back to the browser, you don't have to reload to see your changes. This is due to *hot swapping*.  
 
 ---
@@ -100,6 +107,7 @@ Now, you have a button that does absolutely nothing! Note that if you go back to
 We would probably like our buttons to not do nothing, so let's fix that by adding some functionality.  
   
 Scroll down in the file until you find the ```spamTestMessages``` function. It should look like this:
+
 ```typescript
 const spamTestMessages = () => {
 
@@ -112,7 +120,9 @@ const spamTestMessages = () => {
   setTimeout(() => clearInterval(interval), 5000)
 }
 ```
+
 What better for adding functionality than a function? We will make it so that this code runs whenever the button is pressed. Go back to the button, and add the event ```@onclick="spamTestMessages()"``` to it as such. Don't forget to change the text to something descriptive:
+
 ```html
 <button class="btn btn-primary" @click="spamTestMessages()">
   Spam test messages
@@ -121,7 +131,7 @@ What better for adding functionality than a function? We will make it so that th
 
 Now click it and... still nothing? Open up your web browser's *inspector* (You can use the shortcut **ctrl-shift-i**, or right-click and select *"inspect"*) Go to the *console* tab, and, alongside a couple warnings, you should see a message like this appear:
 
-```
+```text
 Sent a message at 2026-06-22T21:30:56.817Z
 ```
 
@@ -134,10 +144,13 @@ const interval = setInterval(() => {
   ...
 }, 1000)
 ```
+
 setInterval (as the comment suggests), runs the function inside of it every 1000 milliseconds (every second). An id for it is stored in the ```interval``` variable.
+
 ```typescript
 setTimeout(() => clearInterval(interval), 5000)
 ```
+
 setTimeout runs the function inside of it after 5000 milliseconds (5 seconds). That function (```clearInterval()```) stops the previous interval.
 
 ```typescript
@@ -145,18 +158,21 @@ const interval = setInterval(() => {
   console.log("Sent a message at " + new Date().toISOString())
 }, 1000)
 ```
+
 This part of the function causes the output. It prints a message to the console containing the current time.
 
 ---
 
 ## WebSockets
+
 ### Overview
 
 Sending a message to the console is great and all, but it's only really useful for debugging. It would be nice to send messages to different parts of our code, including to the rover. *WebSockets* are part of how we do this.
 
-***WebSocket*** is a networking protocol, like HTTP. It lets computers talk to each other via *WebSocket**s***. It sends messages quickly - great for real-time updates. In our codebase, when a ROS topic is published, it gets sent to the backend, and then forwarded to the frontend via a WebSocket (if one has been set up). It also works in reverse; a frontend element can send messages to the backend and then to the rover.
+When a ROS topic is published, it gets sent to the backend, and then forwarded to the frontend via a WebSocket (if one has been set up). It also works in reverse; a frontend element can send messages to the backend and then to ROS2.
 
 ### Vue Component Setup
+
 To use a WebSocket in a component, we first import necessary dependencies and define the necessary functions:
 
 ```typescript
@@ -206,6 +222,7 @@ Go to ```server.py```. As the name suggests, it boots up most of the backend cod
 async def ws_starter(websocket: WebSocket):
   await handle_websocket(websocket, StarterHandler)
 ```
+
 Don't forget the corresponding import above.
 
 ```python
@@ -237,6 +254,7 @@ Change the ```new Date().toISOString()``` to some other value. Press the button 
 #### 2
 
 Next, undo changing ```new Date().toISOString()```, and try this challenge: Get the following to display in your terminal:
+
 ```bash
 [gui_backend.sh-1] [WARN] testing message 'Phil' received at <current time>
 ```
@@ -255,12 +273,15 @@ onMessage<?>('starter', '?', msg => {
   console.log(?)
 })
 ```
+
 ---
+
 ## Components Inside of Components
 
 If you have pried into some of the other views/pages, you've seen they have many sections with complex parts, and that some of those sections are reused on different pages. These sections are called *components*. The view itself is also a component. The Starter page is sparse, so let's try to add some to it.  
 
 It would be nice to test the rover's arm on the page, so we should add the necessary components for that. First, we have to import them inside of the ```<script>``` tag. Replace the ```// TODO import components```:
+
 ```typescript
 import ArmControls from '../components/ArmControls.vue'
 import Rover3D from '../components/Rover3D.vue'
@@ -303,11 +324,10 @@ Now the page looks... kinda weird actually. We should format it.
 <Rover3D class="island m-0 p-0" style="max-height: 700px;" />
 ```
 
-* ```island``` adds a white, rounded background to a component.
-* ```p``` (and by extension, ```p-y```) changes padding.
-* ```m``` is for changing margins.
-* ```style``` is not part of Tailwind; it manually changes the elements CSS styling. ```max-height: 700px``` forces to ```Rover3D``` component to stay under 700 pixels of height  
-
+- ```island``` adds a white, rounded background to a component.
+- ```p``` (and by extension, ```p-y```) changes padding.
+- ```m``` is for changing margins.
+- ```style``` is not part of Tailwind; it manually changes the elements CSS styling. ```max-height: 700px``` forces to ```Rover3D``` component to stay under 700 pixels of height  
 
 The page looks a little better now, but it still has an odd layout. Group the button and ```ArmControls``` together using a ```<div>```
 
@@ -389,8 +409,8 @@ const { connected, axes, buttons, vibrationActuator } = useGamepadPolling({
 ```
 
 However, pressing anything won't move the arm currently. This is for two reasons:
-* The arm mode has to be set.
-* The backend needs a rover with an arm to move.
+- The arm mode has to be set.
+- The backend needs a rover with an arm to move.
 
 ### Setting up ```Arm Controls```
 
@@ -441,11 +461,11 @@ The simulator and RViz will open in new windows. *RViz* is a useful tool that al
 
 ### Navigating the Simulator
 
-The simulator is the one with the MRover logo as its symbol. You can move the camera with **WASD**, **space**, **ctrl**, and the mouse. **Esc** toggles the mouse from being locked to unlocked and back again. 
+The simulator is the one with the MRover logo as its symbol. You can move the camera with **WASD**, **space**, **ctrl**, and the mouse. **Esc** toggles the mouse from being locked to unlocked and back again.  
 
 ### Controlling the Rover
 
-Everything is currently frozen. Press **p** to enable physics, and uncheck **publish ik**. You can move the rover with **i**, **j**, **l**, and "**,**" while the mouse is locked. Go back to the Starter view in your browser. Make sure throttle mode is selected, and use **WASD** to control the arm. It will move in both the browser and the simulator. 
+Everything is currently frozen. Press **p** to enable physics, and uncheck **publish ik**. You can move the rover with **i**, **j**, **l**, and "**,**" while the mouse is locked. Go back to the Starter view in your browser. Make sure throttle mode is selected, and use **WASD** to control the arm. It will move in both the browser and the simulator.  
 
 ---
 
@@ -527,11 +547,10 @@ You shouldn't wait until a feature is completely, all-the-way done before making
 
 There you have it! Your first teleop project done. It was a lot to take in, so don't sweat if you don't get it all right away. With practice, it will come to you. There are a couple things I haven't gone over, like our SQL databases, but what was covered above were the most essential things to know. Here are some things you can do to learn more, and help you in the future:
 
-* **Read the docs.** You were probably already doing that, but, if you weren't, go ahead and do that. Try to read all about ROS2, all about teleop, the general resources, and some of each of the other teams.
-* **Skim the codebase.** Look at files at multiple parts of the codebase, and try to figure out what they do. Modify them, remove them, add them, and see what happens. You can reset a branch back to its remote version with ```git reset --hard origin/<branch-name>```. I recommend looking in the views, the components, the _ws.py files, the .msgs, the shell scripts (.sh files), and whatever seems to interest you.
-* **Customize your environment.** Change the colors on your terminal. Learn keyboard shortcuts for VSCode (did you know **ctrl-alt-"-"** will move the cursor to its previous position on Ubuntu, even between files). Try out Vim. Install some extensions. Put up a fancy wallpaper. Making navigating your computer easy will pay off in the long run.
-* **Talk with other members.** MRover is a team, and we work best when there's good communication. Try to familiarize yourself with your teammates and some members of other teams too. Heck, try out another team if they look fun, I ain't stopping you. If you have any questions at all, don't be afraid to ask me or someone else.  
-* **Ctrl-f, ctrl-shift-f, ctrl-p, and ctrl-click are your best friends.** I think I learned the most about MRover by looking at files related to what I was working on. Learn what these do, and try them out.
-
+- **Read the docs.** You were probably already doing that, but, if you weren't, go ahead and do that. Try to read all about ROS2, all about teleop, the general resources, and some of each of the other teams.
+- **Skim the codebase.** Look at files at multiple parts of the codebase, and try to figure out what they do. Modify them, remove them, add them, and see what happens. You can reset a branch back to its remote version with ```git reset --hard origin/<branch-name>```. I recommend looking in the views, the components, the _ws.py files, the .msgs, the shell scripts (.sh files), and whatever seems to interest you.
+- **Customize your environment.** Change the colors on your terminal. Learn keyboard shortcuts for VSCode (did you know **ctrl-alt-"-"** will move the cursor to its previous position on Ubuntu, even between files). Try out Vim. Install some extensions. Put up a fancy wallpaper. Making navigating your computer easy will pay off in the long run.
+- **Talk with other members.** MRover is a team, and we work best when there's good communication. Try to familiarize yourself with your teammates and some members of other teams too. Heck, try out another team if they look fun, I ain't stopping you. If you have any questions at all, don't be afraid to ask me or someone else.  
+- **Ctrl-f, ctrl-shift-f, ctrl-p, and ctrl-click are your best friends.** I think I learned the most about MRover by looking at files related to what I was working on. Learn what these do, and try them out.
 
 Now, go eat lunch or something. You've probably been here a while.
