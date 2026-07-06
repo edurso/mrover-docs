@@ -179,6 +179,7 @@ export default defineConfig({
           items: [
             { label: 'Teleop Overview', slug: 'teleop/overview' },
             { label: 'Teleop Quickstart', slug: 'teleop/quickstart' },
+            { label: 'Teleop Starter Project', slug: 'teleop/starter-project' },
             { label: 'Vue Introduction', slug: 'teleop/vue-introduction' },
             { label: 'Sample Vue Component', slug: 'teleop/sample-vue-component' },
             { label: 'Tailwind Introduction', slug: 'teleop/tailwind-introduction' },
@@ -186,7 +187,6 @@ export default defineConfig({
             { label: 'GUI Style Checking', slug: 'teleop/gui-style-checking' },
             { label: 'Websockets Introduction', slug: 'teleop/websockets-introduction'},
             { label: 'Camera Client', slug: 'teleop/camera-client' },
-            { label: 'Teleop Starter Project', slug: 'teleop/starter-project' },
             { label: 'Teleop FAQ', slug: 'teleop/faq' },
             { label: 'Downloading Offline Map', slug: 'teleop/downloading-offline-map' },
             { label: 'WebSocket Handlers Lookup', slug: 'teleop/consumers-lookup' }
