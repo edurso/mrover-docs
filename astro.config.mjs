@@ -193,6 +193,7 @@ export default defineConfig({
                 { label: 'Sample Vue Component', slug: 'teleop/sample-vue-component' },
                 { label: 'Tailwind Introduction', slug: 'teleop/tailwind-introduction' },
                 { label: 'Websockets Introduction', slug: 'teleop/websockets-introduction'},
+                { label: 'SQLite Introduction', slug: 'teleop/sqlite-introduction'}
               ]
             },
             {
