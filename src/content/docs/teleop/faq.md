@@ -18,7 +18,7 @@ Enter `mrover` before trying to run the basestation.
 You have not entered the Python virtual environment. To enter the python venv, enter `mrover` in the shell. This macro runs:
 
 ```bash
-$ cd ~/ros2_ws/src/mrover && source ~/ros2_ws/src/mrover/venv/bin/activate
+cd ~/ros2_ws/src/mrover && source ~/ros2_ws/src/mrover/venv/bin/activate
 ```
 
 which opens the python virtual environment and allows you to run the basestation.
@@ -27,7 +27,7 @@ which opens the python virtual environment and allows you to run the basestation
 
 ## CMake
 
-### Output
+### Output 1
 
 From your `./build.sh` output:
 
@@ -36,9 +36,29 @@ ZED not found
 science_hw_bridge missing
 ```
 
-### Solution
+### Solution 1
 
 Some files that CMake expects are missing. You could try and remove the `#Perception` and `#Embedded` sections in `CMakeLists`, and reach out to your team lead for help.
+
+### Output 2
+
+`./build.sh` output gives many missing file errors.
+
+### Solution 2
+
+Try updating or deinitializing and then reinitializing git submodules.
+
+``` bash
+git submodule update <submodule> 
+# or
+git submodule deinit <submodule>
+git submodule init <submodule>
+```
+
+Submodules include;
+- deps/dawn
+- deps/manif
+- esw/fw
 
 ---
 
