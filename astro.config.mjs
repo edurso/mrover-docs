@@ -183,6 +183,7 @@ export default defineConfig({
                 { label: 'Teleop Overview', slug: 'teleop/overview' },
                 { label: 'Teleop Quickstart', slug: 'teleop/quickstart' },
                 { label: 'Teleop Starter Project', slug: 'teleop/starter-project' },
+                { label: 'Teleop Projects', slug: 'teleop/projects' },
             ]},
             {
               label: 'Guides',
