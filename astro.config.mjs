@@ -182,8 +182,7 @@ export default defineConfig({
               items: [
                 { label: 'Teleop Overview', slug: 'teleop/overview' },
                 { label: 'Teleop Quickstart', slug: 'teleop/quickstart' },
-                { label: 'Teleop Starter Project', slug: 'teleop/starter-project' },
-                { label: 'Teleop Projects', slug: 'teleop/projects' },
+                { label: 'Teleop Starter Project', slug: 'teleop/starter-project' }
             ]},
             {
               label: 'Guides',
@@ -207,6 +206,7 @@ export default defineConfig({
                 { label: 'WebSocket Handlers Lookup', slug: 'teleop/consumers-lookup' }
               ]
             },
+            { label: 'Teleop Projects', slug: 'teleop/projects' },
             { label: 'Teleop FAQ', slug: 'teleop/faq' }
           ]
         },
