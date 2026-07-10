@@ -18,7 +18,7 @@ The tasks you complete in this project will be similar to tasks that you see in 
 
 ### Opening the Code
 
-First, go to [Teleop Quickstart](quickstart.md) and make sure your environment is set up. Critically, make sure you've run ```./build.sh``` and have all necessary dependencies.
+First, go to [Teleop Quickstart](/teleop/quickstart) and make sure your environment is set up. Critically, make sure you've run ```./build.sh``` and have all necessary dependencies.
 
 Open up a terminal, and type ```mrover```. Then:  
 
@@ -54,7 +54,7 @@ ros2 launch mrover basestation.launch.py mode:=dev
 ```mode:=dev``` launches in development mode. Without it, the basestation will launch in production mode and in a new window.
 :::
 
-This launches both the frontend and the backend. Now once you go back to your browser, you should see a webpage with a header and some text with "Hello World!" in it after reloading. If not, make sure you did everything in [Teleop Quickstart](quickstart.md), or ask for help.
+This launches both the frontend and the backend. Now once you go back to your browser, you should see a webpage with a header and some text with "Hello World!" in it after reloading. If not, make sure you did everything in [Teleop Quickstart](/teleop/quickstart), or ask for help.
 
 :::note
 - The ```/starter``` part of the url specifies that you are on the "Starter" page of the basestation. You can remove it to see the main page.  
@@ -192,7 +192,7 @@ onMounted(() => {
 
 :::caution
   WebSocket setup and closing is typically handled in the highest level component, in a different way than above.  
-  Check [Websocket Handlers](consumers-lookup.md) for more information.
+  Check [Websocket Handlers](/teleop/consumers-lookup) for more information.
 :::
 
 Messages can now be sent through this WebSocket (WebSocket with id "starter"). When the Vue component is unmounted, we also have to close the WebSocket.
