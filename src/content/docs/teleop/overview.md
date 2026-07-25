@@ -52,3 +52,7 @@ To support the frontend GUI, we have a Python FastAPI backend that bridges it to
 [WebSocket Handlers Lookup](/teleop/consumers-lookup)
 
 [Teleop Starter Project](/teleop/starter-project)
+
+---
+
+Have a suggestion for features? Put it [here](https://docs.google.com/forms/d/e/1FAIpQLSd-sDdytRO2hFJAeUFrdFSiaeeOY1nzcbLjtVUYSmkCp70zNw/viewform?usp=sharing&ouid=104464537546922765205)!

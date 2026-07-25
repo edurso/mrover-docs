@@ -207,6 +207,7 @@ export default defineConfig({
               ]
             },
             { label: 'Teleop Projects', slug: 'teleop/projects' },
+            { label: 'Feature Request', slug: 'teleop/feature-request' },
             { label: 'Teleop FAQ', slug: 'teleop/faq' }
           ]
         },
