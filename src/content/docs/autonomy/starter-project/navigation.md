@@ -4,21 +4,21 @@ sidebar:
   order: 4
 ---
 
-For the navigation part of the starter project, you will write a ROS2 node that uses the outputs of the localization and perception nodes to navigate the rover. In particular, you will first command the rover to drive towards a predefined point (8m, 2m). Once the rover has arrived at this point, it should be able to detect and see an AR tag. The rover will then turn until it is aligned with the rover tag and drive forward towards the AR tag until it hits a distance threshold.
+For the navigation part of the starter project, you will write a ROS2 node that uses the outputs of the localization and perception nodes to navigate the rover. In particular, you will first command the rover to drive towards a predefined point (8m, 2m). Once the rover has arrived at this point, it should be able to detect and see an AR tag. The rover will then turn until it is aligned with the AR tag and then drive forward towards it until a predefined distance threshold.
 
 Outlining the steps mentioned above, the navigation node can be broken up into two parts:
 
 1.  Waypoint Navigation: Given the rover's pose (position and heading) from the localization node, the rover will turn and drive towards and stop at the point (8, 2).
 2.  AR Tag Navigation: Using the perception node, the rover will turn towards the detected AR Tag. It will then drive towards the AR Tag and stop in front of it within a given distance threshold.
 
-The navigation node itself will command the rover to drive by publishing a drive command. Thinking in terms of the inputs and outputs for this node often makes this navigation node easier to understand:
+The navigation node in this part will command the rover to drive by publishing a drive command. Thinking in terms of the inputs and outputs for this node often makes this navigation node easier to understand:
 
 ### Inputs
 - Rover pose (the rover’s position and orientation in space): obtained from the TF tree and maintained by the localization node. 
-- Tag message published from the perception node (from channel `tag`).
+- Tag message: published from the perception node (from channel `tag`), describing any found AR tags.
 
 ### Outputs
-- Velocity data: [Twist message](http://docs.ros.org/en/lunar/api/geometry_msgs/html/msg/Twist.html)
+- Velocity data: a drive command for the rover [Twist message](http://docs.ros.org/en/lunar/api/geometry_msgs/html/msg/Twist.html)
 
 ### Navigation Starter Project Structure
 
@@ -34,7 +34,7 @@ In `context.py`
 
 The goal of this class is to provide access to an interface for reading and writing information regarding the rover's environment and the rover itself. It contains the objects `Rover` and `Environment`, both of which you will need to implement various functions for. It also contains the ROS2 publisher and subscriber objects that you use to listen to and send messages for this node.
  
-#### Rover class
+#### Rover class (TODOs)
 
 In `context.py`
 
@@ -42,9 +42,9 @@ Start by implementing the Rover class. The rover object (accessed through the co
 
 1. `get_pose(self) -> Optional[SE3]`
 
-In this function, you will fill in the code so that the function returns an SE3 object. An SE3 object is a mathematical structure that represents where the rover is in the world. For more information about SE3s and what they are checkout [this wikipage](/autonomy/resources/3d-poses-transforms-rotations). Additionally, read over the docstrings within `mrover/starter_project/autonomy/src/util/SE3.py` to see the full SE3 interface. 
+In this function, you will fill in the code that returns an SE3 object. An SE3 object is a mathematical structure that represents where the rover is in the world. For more information about SE3s and what they are checkout [this wikipage](/autonomy/resources/3d-poses-transforms-rotations). Additionally, read over the docstrings within `mrover/starter_project/autonomy/src/util/SE3.py` to see the full SE3 interface. The docstring will outline the variables that make up this object.
 
-Once you do that, you're going to want to use the `SE3.from_tf_tree` function in order to get the SE3 that represents the rover's pose. This function is found in the `SE3.py` file. We have imported this class into the context file. The function’s parameters include:
+Once you are familiar with an SE3 object, you're going to want to use the `SE3.from_tf_tree` function in order to obtain an SE3 that represents the rover's pose. This function is found in the `SE3.py` file. We have imported this class into the context file. The function’s parameters include:
 
 `tf_buffer`: the tf buffer used to query the TF tree
 `parent_frame`: the parent coordinate frame of the desired transform
@@ -54,13 +54,13 @@ Note that the `tf_buffer` has already been created for you and is owned by the C
 
 2. `send_drive_command(self, twist: Twist)` 
 
-Here we will need to fill in the code so that the function publishes a Twist message using the velocity command publisher object. To note, the velocity command publisher object is a member of the context (`vel_cmd_publisher`). This velocity command publisher object is of type Publisher, and you can use the function `publish()` on this publisher. This will publish the inputted Twist command and allow other nodes to obtain this data by subscribing to where this publisher publishes its data. If you wish, you can learn more about publishers and subscribers [here](https://docs.ros.org/en/humble/Tutorials/Beginner-Client-Libraries/Writing-A-Simple-Py-Publisher-And-Subscriber.html)
+Here we will need to fill in the code so that this function publishes a Twist message using the velocity command publisher object. To note, the velocity command publisher object is a member of the context (`vel_cmd_publisher`). This velocity command publisher object is of type Publisher, and you can use the function `publish()` on this publisher. This will publish the inputted Twist command and allow other nodes to obtain this data by subscribing to where this publisher publishes its data. If you wish, you can learn more about publishers and subscribers [here](https://docs.ros.org/en/humble/Tutorials/Beginner-Client-Libraries/Writing-A-Simple-Py-Publisher-And-Subscriber.html).
 
 3. `send_drive_stop(self)`
 
-Here we will need to fill in the code so that this function stops the rover. (hint #1: use `send_drive_command()`) (hint #2: `Twist()` initializes velocities to be 0 in its message).
+Here we will need to fill in the code so that this function stops the rover. (hint #1: use `send_drive_command()`) (hint #2: `Twist()` initializes velocities to be 0 in its message)
 
-#### Environment class
+#### Environment class (TODO)
 
 In `context.py`
 
@@ -85,7 +85,7 @@ In `state.py`
 
 We have provided a Done State that represents the rover in its "Done State". We don't want our program to end when the rover completes, so we have a state that essentially loops and does nothing. We have also provided a Fail State that represents a failure to finish the task.
 
-#### Drive State
+#### Drive State (TODOs)
 
 In `drive_state.py`
 
@@ -93,18 +93,18 @@ The goal of this state is to drive towards the set point (8, 2). We've created t
 
 Hint: Use the functions from context.rover we've already written
 
-#### Tag Seek State
+#### Tag Seek State (TODOs)
 
 In `tag_seek.py`
 
 The goal of this state is to drive towards the AR tag after arriving at the set point (8, 2). We've created the class for you but, just like the Drive State, you will need to implement the `on_loop()` function. This will be a bit trickier as you don't actually have a pose to drive to; instead, you just have the same general measurements regarding angular and distance offsets that you calculated earlier.
 
-You can get information about how close the rover is to the tag by using the function `get_fid_data` in context.env. You want the rover to be within a certain distance (`DISTANCE_TOLERANCE`) from the tag, and face the tag within a certain angular distance (`ANGULAR_TOLERANCE`), to be able to transition to the Done state. We have set these tolerances to be `DISTANCE_TOLERANCE = 0.99`, `ANGULAR_TOLERANCE = 0.3`. Hint: `get_fid_data()` returns `StarterProjectTag`, this includes information about how close the rover is to the tag and the measurements of where the center of the tag is in our view (x and y).
+You can get information about how close the rover is to the tag by using the function `get_fid_data` in context.env. You want the rover to be within a certain distance (`DISTANCE_TOLERANCE`) from the tag, and face the tag within a certain angular distance (`ANGULAR_TOLERANCE`), to be able to transition to the Done state. We have set these tolerances to be `DISTANCE_TOLERANCE = 0.99`, `ANGULAR_TOLERANCE = 0.3`. Hint: `get_fid_data()` returns `StarterProjectTag`, this includes information about how close the rover is to the tag and the measurements of where the center of the tag is in our view (x and y). In a way you can think of this as the location of the tag being relative to the rovers frame.
 
 If the rover is not within the angular and distance tolerances, create a twist command and change the linear.x value and/or the angular.z value so that the rover becomes within the tolerances. Then send this twist command to the rover and stay in the TagSeekState.
 
-#### Navigation class
+#### Navigation class (TODOs)
 
 In `navigation_starter_project.py`
 
-The navigation class is where the whole state machine comes together. We've already done the hard work of creating the whole state machine now we just need to put it all together. We've already added the DoneState to the state machine, and use a similar pattern for adding the TagSeek and DriveState states to the state machine.
+The navigation class is where the whole state machine comes together. We've already done the hard work of creating the whole state machine now we just need to put it all together. We've already added the DoneState to the state machine, and use a similar pattern for adding the TagSeek and DriveState states to the state machine. Then to finish everything, you will need to write the line of code which initializes a node.
