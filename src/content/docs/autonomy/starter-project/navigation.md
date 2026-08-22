@@ -77,7 +77,7 @@ HINT: Use the same member variable you just set in your `receive_fid_data` funct
 
 After implementing the Rover and Environment classes, you have now finished creating the lower level interfaces that we will be used to write higher level logic! Basically, all of the interaction with the outside world is complete, we now will use the abstractions we've created to code the logic of our state machine. Let's take a look at how we structure single states and build the states that we will need. After that, we will hook our states into the greater state machine and we will have completed the project!
 
-First of all, what is a state? Please read [this page](/src/content/docs/autonomy/navigation/overview.md) to learn what a state is. 
+First of all, what is a state? Please read [this page](/src/content/docs/autonomy/navigation/overview) to learn what a state is. 
 
 #### Done state (no TODOs, fully provided)
 
