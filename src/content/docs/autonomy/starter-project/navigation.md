@@ -42,7 +42,7 @@ Start by implementing the Rover class. The rover object (accessed through the co
 
 1. `get_pose(self) -> Optional[SE3]`
 
-In this function, you will fill in the code that returns an SE3 object. An SE3 object is a mathematical structure that represents where the rover is in the world. For more information about SE3s and what they are checkout [this wikipage](/autonomy/resources/3d-poses-transforms-rotations). Additionally, read over the docstrings within `mrover/starter_project/autonomy/src/util/SE3.py` to see the full SE3 interface. The docstring will outline the variables that make up this object.
+In this function, you will fill in the code that returns an SE3 object. An SE3 object is a mathematical structure that represents where the rover is in the world. To see the full interface of SE3s, read over the docstrings within `mrover/starter_project/autonomy/src/util/SE3.py`. The docstring will outline the variables that make up this object.
 
 Once you are familiar with an SE3 object, you're going to want to use the `SE3.from_tf_tree` function in order to obtain an SE3 that represents the rover's pose. This function is found in the `SE3.py` file. We have imported this class into the context file. The function’s parameters include:
 
@@ -77,7 +77,7 @@ HINT: Use the same member variable you just set in your `receive_fid_data` funct
 
 After implementing the Rover and Environment classes, you have now finished creating the lower level interfaces that we will be used to write higher level logic! Basically, all of the interaction with the outside world is complete, we now will use the abstractions we've created to code the logic of our state machine. Let's take a look at how we structure single states and build the states that we will need. After that, we will hook our states into the greater state machine and we will have completed the project!
 
-First of all, what is a state? Please read [this page](/autonomy/navigation/overview) to learn what a state is. 
+First of all, what is a state? Please read [this page](/src/content/docs/autonomy/navigation/overview.md) to learn what a state is. 
 
 #### Done state (no TODOs, fully provided)
 
