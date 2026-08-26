@@ -3,21 +3,43 @@ title: "Tailwind Introduction"
 ---
 # Tailwind Introduction
 
-Tailwind CSS is a utility-first CSS framework. Instead of writing custom CSS rules, you apply small, single-purpose classes directly in your HTML. Click [here](https://tailwindcss.com/docs) to access the Tailwind docs.
+Tailwind CSS is a utility-first CSS framework. Instead of writing custom CSS rules, you apply small, single-purpose classes directly in your HTML. Click [here](https://tailwindcss.com/docs) to access the Tailwind docs.  
 
-## Why Tailwind over Bootstrap?
+We previously used [Bootstrap](https://getbootstrap.com/), but swapped because Tailwind is:
 
-- **Utility-first, not opinionated**: Tailwind gives you low-level utilities instead of pre-built components. You build your own designs without fighting framework defaults.
-- **JIT compiled**: Only the classes you use end up in your CSS bundle. Bootstrap ships its entire pre-compiled stylesheet.
-- **Industry standard**: Tailwind is the most widely used CSS framework in modern frontend development.
+- **Unopinionated** - No "default" styling to compete with.
+- **JIT compiled** - Only used classes end up in CSS bundle.
+- **Industry standard** - Most popular CSS framework.
 
 ## When to Use Tailwind vs `<style scoped>`
 
-Since Vue uses SFCs (Single File Components), using `<style scoped>` is already convenient. However, prefer Tailwind utility classes for common styling needs like spacing, layout, and colors.
+Since Vue uses SFCs (Single File Components), writing CSS in `<style scoped>` is already convenient. However, prefer Tailwind utility classes for common styling needs like spacing, layout, and colors.
+
+**Example** - Instead of:
+
+```vue
+<template>
+  <h1 class="im-a-heading">This is a Heading<h1>
+</template>
+
+<style scoped>
+  .im-a-heading {
+    padding: 4rem;
+  }
+</style>
+```
+
+Do
+
+```vue
+<template>
+  <h1 class="p-16">This is a Heading<h1>
+</template>
+```
 
 Use `<style scoped>` only when:
 - You need custom styles not covered by Tailwind (e.g., a unique animation)
-- You are defining reusable component-level classes (our `cmd-*` design system classes)
+- You are defining reusable component-level classes (eg., a button that appears several times in the component)
 
 ## Spacing Utility
 
@@ -52,6 +74,7 @@ Tailwind uses a consistent spacing scale where each unit = 0.25rem (4px):
 | `8` | 2rem (32px) |
 | `10` | 2.5rem (40px) |
 | `12` | 3rem (48px) |
+| `full` | size of container |
 
 ### Examples
 
@@ -90,14 +113,14 @@ Tailwind's flexbox utilities replace verbose CSS:
 </div>
 ```
 
-## Our `cmd-*` Design System
+## MRover Styles
 
-We define a set of reusable component classes in `app.css` prefixed with `cmd-`:
+We define a set of reusable component classes in `app.css`:
 
-- `cmd-btn`, `cmd-btn-sm` - buttons
-- `cmd-btn-danger`, `cmd-btn-success`, `cmd-btn-primary` - button variants
-- `cmd-btn-outline-danger`, `cmd-btn-outline-success` - outline variants
-- `cmd-modal` - modal dialogs
-- `cmd-list-item` - list items
+- `btn`, `btn-sm` - buttons
+- `btn-danger`, `btn-success`, `btn-primary`, `btn-secondary`, `btn-info`, etc. - button variants
+- `btn-outline-danger`, `btn-outline-success` - outline variants
+- `modal-`... - modal dialogs
+- `list-item` - list items
 
-These are defined in `<style scoped>` blocks or `app.css` and provide consistent styling across the GUI. Use Tailwind for layout, use `cmd-*` classes for component styling.
+These are defined in `<style scoped>` blocks or `app.css` and provide consistent styling across the GUI. Use Tailwind for layout, use `app.css` classes for component styling.

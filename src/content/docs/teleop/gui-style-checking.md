@@ -43,6 +43,18 @@ bun run stylelint
 
 - This runs **Stylelint**, which checks CSS ordering and conventions in `.vue` and `.css` files.
 
+:::tip
+You can use
+
+```zsh
+bun run stylelint "**/*.css"
+# or
+bun run stylelint "**/*.vue"
+```
+
+in zsh *(type of terminal shell; what you are probably already using)* to run stylelint on every css or vue file in the current directory/folder.
+:::
+
 Additionally, the **Prettier** plugin should take care of the more mundane tasks like spacing and indentation in your code when you save (Ctrl-S).
 
 ---
