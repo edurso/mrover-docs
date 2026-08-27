@@ -11,7 +11,7 @@ Python script to download offline maps directly into `teleoperation/basestation_
 Run with
 
 ```
-python3 teleoperation/download_offline_maps.py --location=<loc>
+python3 scripts/download_offline_maps.py --location=<loc>
 ```
 
 Loc can be:
