@@ -28,37 +28,39 @@ title: "Navigation System Documentation"
 
     2.8 [Stuck Recovery State](#stuck-recovery-state)
 
-2. [Context, Rover, Environment, Course](#context-rover-environment-course)
+3. [Context](#context)
 
-    4.1 [Context](#context-functionsattributes)
+    3.1 [Course](#course)
 
-    4.2 [Rover](#rover)                                                                                                                                                              
+    3.2 [Environment](#environment)
 
-    4.4 [Course](#course)
+    3.3 [Rover](#rover)                                                                                                                                                              
 
-3. [Trajectory](#trajectory)
+4. [Trajectory](#trajectory)
 
-    3.1 [SearchTrajectory](#searchtrajectory)
+    4.1 [SearchTrajectory](#searchtrajectory)
 
-4. [Path Planning](#path-planning)
+5. [Path Planning](#path-planning)
     
-    4.1 [A* Algorithm](#a-algorithm)
+    5.1 [A* Algorithm](#a-algorithm)
 
-    4.2 [Path Execution](#path-execution)
+    5.2 [Path Smoothing](#path-smoothing)
 
-    4.3 [Path Smoothing](#path-smoothing)
+    5.3 [Path Relaxation](#path-relaxation)
 
-5. [DriveController Class](#drivecontroller-class)
+    5.4 [Path Interpolation](#path-interpolation)
 
-    5.1 [Drive Controller State Machine](#drive-controller-state-machine)
+6. [DriveController Class](#drivecontroller-class)
 
-    5.2 [Adaptive Pure Pursuit](#adaptive-pure-pursuit)
+    6.1 [Drive Controller State Machine](#drive-controller-state-machine)
 
-6. [ArmController](#arm-controller)
+    6.2 [Adaptive Pure Pursuit](#adaptive-pure-pursuit)
 
-    6.1 [Arm IK](#arm-ik)
+7. [ArmController](#arm-controller)
 
-    6.2 [Cick IK](#click-ik)
+    7.1 [Arm IK](#arm-ik)
+
+    7.2 [Click IK](#click-ik)
 
 
 ## State Machine
@@ -129,7 +131,7 @@ Transitions:
 * If we are at a target from a previous leg: Transition into the Backup state (to avoid driving through the previous leg's target)
 * If we see the target (via a message from perception): Transition into the Approach Target state
 * If we see the target in the long range camera: Transition into the Long Range state
-* If we complete a waypoint with an target associated with it: Transition into Costmap Search state
+* If we complete a waypoint with a target associated with it: Transition into Costmap Search state
 * If the rover is stuck: Transition into Stuck Recovery state
 * Else: Stay in Waypoint State
 
@@ -143,7 +145,7 @@ The state also supports A* path planning with obstacle avoidance when costmap in
 
 Transitions:
 
-* If the target position is None for a long period of time: Return to the previous state(Search/Waypoint state)
+* If the target position is None for a long period of time: Return to the previous state (Search/Waypoint state)
 * If we have arrived at the target: Return Done state
 * If the rover is stuck: Transition into Stuck Recovery state
 * Else stay in Approach Target State
@@ -177,7 +179,7 @@ Transitions:
 
 ### Backup State
 
-Summary: The Backup state is entered into after we complete a search for a target(e.g. the tag). We enter this state because after arriving to a target, as we move onto another leg, we don't want to run over the previous target. Instead we opt to retrace the rover's path backwards for some distance to lower the odds of collision with a target. 
+Summary: The Backup state is entered into after we complete a search for a target (e.g. the tag). We enter this state because after arriving at a target, as we move onto another leg, we don't want to run over the previous target. Instead we opt to retrace the rover's path backwards for some distance to lower the odds of collision with a target. 
 
 Actions: The Backup state publishes drive commands (Twist messages) that are calculated via the get_drive_command function using the position of all previous points in the rover's path history. It creates a reverse trajectory from the rover's recorded path history and drives backwards along the recorded path for a specified distance.
 
@@ -201,7 +203,7 @@ Transitions:
 * If recovery is complete or timeout is reached: Return to the previous state
 * Else stay in Stuck Recovery State
 
-## Context, Rover, Environment, Course
+## Context
 
 Context is a class that holds many common functions and variables between the states. It serves as the bridge between the Navigation node and the other ROS nodes. The context class also holds references to an object of the Rover class as well as an object of the Environment class and Course class. The Rover class deals with all data related to the rover, the environment class deals with all data related to the environment surrounding the rover. See below for a list of important functions in the Context, Rover, Environment, and Course
 
@@ -272,7 +274,7 @@ vertices = np.hstack((x_coords.reshape(-1, 1), y_coords.reshape(-1, 1)))
 
 ### A* Algorithm
 
-The navigation system uses a custom A* implementation for path planning with comprehensive costmap integration. At each step, A* evaluates a current node by combinding two values: g(n) and h(n).
+The navigation system uses a custom A* implementation for path planning with comprehensive costmap integration. At each step, A* evaluates a current node by combining two values: g(n) and h(n).
 
 - `g(n)` - the actual cost to reach the current node `n` from the starting point
 - `h(n)` - a heuristic estimate of the cost from the current node `n` to the ending point
@@ -301,17 +303,17 @@ INCLUDE COMPASS IMAGE
 
 ### Path Smoothing
 
-Since A* generates a sequence of grid like points (only considers 8 directions at each node), the sequence it outputs is generally jagged and dense. To improve upon this path, we use post-processing algorithms to give a smoother trajectory. Path smoothing can be found in `smoothing.py` and the function `smoothing()` is used to smooth a given trajectory generated by A*. Within this function there are two post-processing algorithms used. Both are toggable based on our .yaml files, as well as operator input from the GUI.
+Since A* generates a sequence of grid like points (only considers 8 directions at each node), the sequence it outputs is generally jagged and dense. To improve upon this path, we use post-processing algorithms to give a smoother trajectory. Path smoothing can be found in `smoothing.py` and the function `smoothing()` is used to smooth a given trajectory generated by A*. Within this function there are two post-processing algorithms used. Both are toggleable based on our .yaml files, as well as operator input from the GUI.
 
-#### Path Relaxation
-The first post-processing algorithm that we have is path relaxation. Our particular algorithm is a greedy point removal algorithm which repeatedly deletes points that cost the least to remove. This is important in removing unnecessary points that would increase the rover's driving time.
+### Path Relaxation
+The first post-processing algorithm is path relaxation. Our implementation uses a greedy point-removal algorithm that repeatedly removes points whose removal has the lowest cost. This helps eliminate unnecessary points that would otherwise increase the rover's driving time.
 
-#### Path Interpolation
-The second post-processing algorithm that we use is called path interpolation. In path interpolation, we fit a curve on the given trajectory then resample points on this curve. Since A* gives a jagged path, this gives a more fine tuned path.
+### Path Interpolation
+The second post-processing algorithm is path interpolation. During path interpolation, we fit a curve to the given trajectory and then resample points along that curve. Because A* generates a jagged path, interpolation produces a more finely tuned trajectory.
 
 ## DriveController Class
 
-The DriveController class is responsible for turning a target position or path into a `Twist` command. In particular it contains two different drive controllers: Driver State Machine and Adaptive Pure Pursuit. When Pure Pursuit is not used, the Drive Controller maintains the current state of the rover.
+The `DriveController` class is responsible for converting a target position or path into a `Twist` command. It contains two different driving approaches: the Drive Controller State Machine and Adaptive Pure Pursuit. When Pure Pursuit is not used, the Drive Controller uses its internal state machine to determine the rover's driving behavior.
 
 #### get_drive_command function
 
@@ -345,7 +347,7 @@ Output:
 
 ### Drive Controller State Machine
 
-When the cost map is not being used, we are at the last point in a trajectory, or an operator chooses to disable pure pursuit, the get_drive_command uses our state machine to drive the rover. When using this, the rover has three difference states: DriveMode.STOPPED, DriveMode.TURN_IN_PLACE, or DriveMode.DRIVE_FORWARD. As you can notice, the rover will never turn and drive forward in the same instance. This implementation seems simple but ensures that the rover will arrive to a given point without oscilating compared to other drive controllers.
+When the cost map is not being used, we are at the last point in a trajectory, or an operator chooses to disable pure pursuit, the get_drive_command uses our state machine to drive the rover. When using this, the rover has three different states: DriveMode.STOPPED, DriveMode.TURN_IN_PLACE, or DriveMode.DRIVE_FORWARD. The rover never turns and drives forward simultaneously. Although this implementation is relatively simple, it ensures that the rover reaches a given point without oscillating compared to other drive controller approaches.
 
 #### Driver State:
 
@@ -368,13 +370,21 @@ The logic in the code is written to follow the state machine diagram. At a high 
 
 ### Adaptive Pure Pursuit
 
-When we are not using the Drive Controller State Machine we are instead using a version of Pure Pursuit called Adaptive Pure Pursuit. Pure Pursuit is a geometric path tracking built around the idea of "chasing" a lookahead point on the path ahead of it and then computing a curvature and corresponding angular velocity for the rover to drive along a circular arc that will intercept that lookahead point. Often when describing pure pursuit, the idea of a circle around the rover is used to represent the lookahead distance and its intersections with a given path.
+When we are not using the Drive Controller State Machine we are instead using a version of Pure Pursuit called Adaptive Pure Pursuit. Pure Pursuit is a geometric path tracking built around the idea of "chasing" a lookahead point on the path ahead of it and then computing a curvature and corresponding angular velocity for the rover to drive along a circular arc that will intercept that lookahead point. When describing Pure Pursuit, a circle around the rover is often used to represent the lookahead distance and its intersections with the path.
 
 <img width="692" height="522" alt="Screenshot 2025-10-10 at 9 11 32 PM" src="https://github.com/user-attachments/assets/a914dfdc-40a8-4f55-bc5d-ceb7014d883d" />
 
-When we find the intersection between this circle and the rovers path, we choose the farthest point intersected and have the rover drive towards this point. The exact Twist that is generated differs from our Drive Controller State machine. As the heading of the rover is more directed towards the current point it is driving towards, the rovers velocity driving forward is at its maximum while its angular velocity is at a minimum. If the rovers heading is drastically away from the target point, the rovers velocty driving forward is minimized while its angular velocity is maximized. 
+When we find the intersection between this circle and the rover's path, we choose the farthest point intersected and have the rover drive towards this point. The exact `Twist` that is generated differs from our Drive Controller State machine. What makes this Pure Pursuit considered adaptive is that the lookahead distance of the rover is not constant. The actual lookahead differs based on the rovers heading towards its target point. The general idea of how the drive controller works is outlined below:
 
-What makes this Pure Pursuit considered adaptive is that the lookahead distance of the rover is not constant. The actual lookahead differs based on the rovers heading towards its target point. If the rover's heading is drastically away from the target point, the lookahead distance shrinks to allow the rover to turn and ensures the rover doesn't accidentically skip points on the path. While if the rover's heading is straight towards the target point its lookahead distance goes towards its maximum.
+If the heading of the rover directed towards the target point:
+- linear velocity is at its maximum 
+- angular velocity is at a minimum 
+- lookahead distance is at a maximum
+
+If the rovers heading is drastically away from the target point:
+- linear velocity is at its minimum
+- angular velocity is at a maximum
+- lookahead distance is at a minimum
 
 The exact algorithm we used was based off of a document by Purdue. Read more about that [here](https://wiki.purduesigbots.com/software/control-algorithms/basic-pure-pursuit).
 
@@ -384,14 +394,18 @@ The ArmController is a ROS2 node that handles the robotic arm's motion control. 
 
 ### Arm Diagram
 
-Our robotic arm has 5 degrees of freedom (DOF), meaning it has 5 seperate joints which control the arm's movement. The following diagrams represent our current arm and have been illustrated to describe its different parts:
+Our robotic arm has 5 degrees of freedom (DOF), meaning it has 5 separate joints which control the arm's movement. 
+
+IMAGES HERE
+
+The following diagrams represent our current arm and have been illustrated to describe its different parts:
 
 - The red line represents Joint A
 - The intersection between the red line and the green line is Joint B 
 - The intersection between the green line and yellow line is Joint C
 - Joint D and E are the two blue cylinders just before the end effector
 
-Each of these joints have seperate limits and move the arm in different ways:
+Each of these joints have separate limits and move the arm in different ways:
 
 - Joint A moves the arm in the Y-axis
 - Joint B and C work in combination to move the arm in the X and Z axis (if we ignore the movement of the end effector)
@@ -399,9 +413,9 @@ Each of these joints have seperate limits and move the arm in different ways:
 
 ### Arm IK
 
-One of the main uses of the Arm Controller is Arm IK. IK is an abreviation for inverse kinematics: a practice used in robotics to calculate the necessary joint positions required to place an end effector (robot's "hand") at a given position. In particular, the Arm Controller can convert end effector position/orientation commands into joint angles.
+One of the main uses of the Arm Controller is Arm IK. IK is an abbreviation for inverse kinematics: a practice used in robotics to calculate the necessary joint positions required to place an end effector (robot's "hand") at a given position. In particular, the Arm Controller can convert end effector position/orientation commands into joint angles.
 
-Another aspect of this is being able to convert velocity commands into joint velocities. This is useful as it enables us to move the arm in the Cartesian space rather than controlling each joint independently. Instead of controlling each joint seperatly, we are esentially able to move the end effector in directions such has forward, backward, left, right, up, or down. These directions seem simple in practice but this requires moving multiple joints. Try moving your arm in a straight line up and down. Notice how you have to move not only your elbow, but your sholder as well!
+Another aspect of this is being able to convert velocity commands into joint velocities. This is useful as it enables us to move the arm in the Cartesian space rather than controlling each joint independently. Instead of controlling each joint separately, we are essentially able to move the end effector in directions such as forward, backward, left, right, up, or down. These directions seem simple in practice but this requires moving multiple joints. Try moving your arm in a straight line up and down. Notice how you have to move not only your elbow, but your shoulder as well!
 
 Although Arm IK is important, the Arm Controller has the important responsibility to also monitor the arm: 
 
@@ -409,17 +423,16 @@ Although Arm IK is important, the Arm Controller has the important responsibilit
 - Automatic velocity scaling if commands are too fast
 - Timeout protection (stops if no commands received for 0.3 seconds)
 - Real-time joint limit validation
-- Forward kinematics is used to track the arms current position
+- Forward kinematics is used to track the arm's current position
 - Arm's current state to the TF tree for other nodes to use
 
 For an in-depth review of the logic refer to this document: [IK.pdf](https://github.com/user-attachments/files/22069295/IK.pdf)
 
 ### Click IK
 :::note
-Click IK has not been merged into main yet. Find it on `nav/cost_map`
+Click IK has not been merged into main yet. Find it on `avb/click-ik`
 :::
 
 Click IK is an extension of the existing Arm IK System that enables intuitive, point-and-click control of the robotic arm enabling operators to click on a point in the camera feed to move the arm's end effector to that location. This system provides a more natural interface for teleoperation, particularly for the ES mission. 
 
-Click IK receives 3D position data from a perception node. The perception node is responsible for converting the clicked pixel coordinates from the GUI into a 3D point using the point cloud. To create this functionality, there is a service within the Arm Controller to determine if a clickable point is within the arms limits. If this point is within the arms limits, this service will move the arm towards the given point.
-
+Click IK receives 3D position data from a perception node. The perception node is responsible for converting the clicked pixel coordinates from the GUI into a 3D point using the point cloud. To create this functionality, there is a service within the Arm Controller to determine if a clickable point is within the arm's limits. If this point is within the arms limits, this service will move the arm towards the given point.
