@@ -1,59 +1,17 @@
 ---
 title: "Navigation"
 ---
-# Navigation System Documentation
 
-## Contents
+## State Machine
 
-1. [State Machine Diagram](#state-machine-diagram)
-2. [What is a State Machine and why do we use a custom implementation?](#what-is-a-state-machine-and-why-do-we-use-a-custom-implementation)
-3. [State Descriptions](#state-descriptions)
-
-    3.1 [Off State](#off-state)
-
-    3.2 [Done State](#done-state)
-
-    3.3 [Waypoint State](#waypoint-state)
-
-    3.4 [Approach Target State](#approach-target-state)
-
-    3.5 [Long Range State](#long-range-state)
-
-    3.6 [Costmap Search State](#costmap-search-state)
-
-    3.7 [Backup State](#backup-state)
-
-    3.8 [Stuck Recovery State](#stuck-recovery-state)
-
-4. [Path Planning](#path-planning)
-    4.1 [A* Algorithm](#a-algorithm)
-    4.2 Costmap Integration
-
-5. [Context, Rover, Environment, Course](#context-rover-environment-course)
-
-    5.1 [Context](#context-functionsattributes)
-
-    5.2 [Rover](#rover)
-
-    5.3 [Environment](#environment)
-
-    5.4 [Course](#course)
-
-6. [DriveController Class](#drivecontroller-class)
-7. [Trajectory](#trajectory)
-8. [SearchTrajectory](#searchtrajectory)
-9. [ArmController](#arm-controller)
-
-
-## State machine diagram
+### State Machine Diagram
 <img width="943" height="400" alt="image" src="https://github.com/user-attachments/assets/a5995b95-7650-4484-af3b-199e4f868227" />
  
-Note: State machine diagrams are generated using the state machine visualizer tool
-Note 2: It may seem like we have "duplicate" arrows in this diagram. This is not a bug in the visualizer. We sometimes have two separate transitions that are representing the same state change. This is done to express the reason behind the state change more cleanly.
+Note: State machine diagrams can be generated using the state machine visualizer tool. When using the tool, we sometimes have two separate transitions that are representing the same state change, meaning you may see "duplicate" arrows. 
 
 run: `ros2 run mrover visualizer.py` in order to have live visualization of what's going on in the state machine.
 
-## What is a State Machine and why do we use a custom implementation?
+### What is a State Machine?
 
 A state is an object that defines a certain mode of behavior for a system. We can define a state through its behavior and also its transitions. For our purposes, the Navigation system can be "in" exactly **one** state at any given time. Every time one cycle of the system occurs, we execute the logic of the current state, and then at the end of that execution, we transition into a new state. This new state does not need to be a different state (in fact, most of the time the "new" state is just the same state). In this system, we can create complex behavior in an organized and relatively easy-to-think-about manner. Many times, state machines are created "manually" through code that looks something like this:
 
@@ -112,7 +70,7 @@ Transitions:
 * If we are at a target from a previous leg: Transition into the Backup state (to avoid driving through the previous leg's target)
 * If we see the target (via a message from perception): Transition into the Approach Target state
 * If we see the target in the long range camera: Transition into the Long Range state
-* If we complete a waypoint with an target associated with it: Transition into Costmap Search state
+* If we complete a waypoint with a target associated with it: Transition into Costmap Search state
 * If the rover is stuck: Transition into Stuck Recovery state
 * Else: Stay in Waypoint State
 
@@ -126,7 +84,7 @@ The state also supports A* path planning with obstacle avoidance when costmap in
 
 Transitions:
 
-* If the target position is None for a long period of time: Return to the previous state(Search/Waypoint state)
+* If the target position is None for a long period of time: Return to the previous state (Search/Waypoint state)
 * If we have arrived at the target: Return Done state
 * If the rover is stuck: Transition into Stuck Recovery state
 * Else stay in Approach Target State
@@ -146,7 +104,7 @@ Transitions:
 
 ### Costmap Search State
 
-Summary: The costmap search state is enacted similarly to the search state. The difference mainly being that the search spiral is modified where the rover will take a lower cost (a route that avoids obstacles). This lower cost route is found with a custom implementation of the A-STAR algorithm. The algorithm uses an occupancy grid that shows the cost of each cell. After the algorithm adds the cost of distance from the search spiral and other factors that contribute to the rover getting stuck. 
+Summary: The costmap search state is enacted similarly to the search state. The difference mainly being that the search spiral is modified where the rover will take a lower cost (a route that avoids obstacles). This lower cost route is found with a custom implementation of the A* algorithm. The algorithm uses an occupancy grid that shows the cost of each cell. After the algorithm adds the cost of distance from the search spiral and other factors that contribute to the rover getting stuck. 
 
 Actions: Like the Search state, the Costmap Search state publishes drive commands (Twist messages) that are calculated via the get_drive_command function. It uses the position of the next point in the search pattern as the position input and the costmap to develop a custom path to follow, and calls the get_drive_command function. If the function returns true we have reached the next point in the search pattern so we increment our path index. Once the path index is equal to the length of the path, we have traversed the entire search pattern and just give up.
 
@@ -160,7 +118,7 @@ Transitions:
 
 ### Backup State
 
-Summary: The Backup state is entered into after we complete a search for a target(e.g. the tag). We enter this state because after arriving to a target, as we move onto another leg, we don't want to run over the previous target. Instead we opt to retrace the rover's path backwards for some distance to lower the odds of collision with a target. 
+Summary: The Backup state is entered into after we complete a search for a target (e.g. the tag). We enter this state because after arriving at a target, as we move onto another leg, we don't want to run over the previous target. Instead we opt to retrace the rover's path backwards for some distance to lower the odds of collision with a target. 
 
 Actions: The Backup state publishes drive commands (Twist messages) that are calculated via the get_drive_command function using the position of all previous points in the rover's path history. It creates a reverse trajectory from the rover's recorded path history and drives backwards along the recorded path for a specified distance.
 
@@ -184,35 +142,7 @@ Transitions:
 * If recovery is complete or timeout is reached: Return to the previous state
 * Else stay in Stuck Recovery State
 
-## Path Planning
-
-:::note
-A* Path Planning has not been merged into main yet. Find it on `nav/cost_map`
-:::
-
-### A* Algorithm
-
-The navigation system uses a custom A* implementation for path planning with comprehensive costmap integration.
-
-**Features**:
-- **Costmap Integration**: Uses occupancy grid data for intelligent obstacle avoidance
-- **Heuristic Functions**: Multiple heuristic options optimized for different scenarios
-- **Path Smoothing**: Post-processing algorithms for smoother trajectories
-- **Failure Handling**: Graceful handling of path planning failures with fallback strategies
-
-**Key Classes**:
-- `AStar`: Main path planning algorithm implementation
-- `SpiralEnd`: Exception for spiral completion scenarios
-- `NoPath`: Exception for path planning failure cases
-- `OutOfBounds`: Exception for out-of-bounds coordinate requests
-
-**Algorithm Characteristics**:
-- **Optimal Path Finding**: Guarantees optimal paths when possible
-- **Obstacle Avoidance**: Intelligently routes around detected obstacles
-- **Cost Optimization**: Minimizes traversal cost while maintaining safety
-- **Real-time Performance**: Optimized for real-time navigation requirements
-
-## Context, Rover, Environment, Course
+## Context
 
 Context is a class that holds many common functions and variables between the states. It serves as the bridge between the Navigation node and the other ROS nodes. The context class also holds references to an object of the Rover class as well as an object of the Environment class and Course class. The Rover class deals with all data related to the rover, the environment class deals with all data related to the environment surrounding the rover. See below for a list of important functions in the Context, Rover, Environment, and Course
 
@@ -254,67 +184,6 @@ The rover class keeps track of the interface regarding the rover itself
 * `send_drive_command(Twist)` sends a twist command to the rover
 * `send_drive_stop()` tells the rover to stop
 
-## DriveController Class
-
-The DriveController class maintains necessary state for driving the rover to a target. It was originally implemented as a pure function, however, we found that certain desired enhancements made maintaining state necessary.
-
-### Interface
-The caller only needs to call two functions:
-* `get_drive_command(target_pos, rover_pose, completion_thresh, turn_in_place_thresh, drive_back, path_start) -> Tuple[Twist, bool]`
-> This function returns a tuple of a Twist message and a boolean representing the necessary drive output and a completion status for driving the rover to a POINT (not a pose, i.e no rotation) given the rover's POSE (includes position and rotation). The completion thresh is a distance representing how close the rover needs to be to the target in TF units to consider itself done. The turn in place thresh represents an angle below which the rover will try to drive straight to the target and above which the rover will try to turn towards it. The drive_back parameter is a boolean representing whether we are driving backwards. The path_start parameter is optional and represents the start of a line segment for path following. See the below algorithm section to see how this function works.
-* `reset()`
-> This function resets the state variables listed below to their initial values.
-
-### Driver State:
-
-* `last_angular_error (Optional[float])` represents the angular error that was recorded at the most recent call to the get_drive_command function. It is initialized as None
-* `driver_state (DriveMode)` is an enum that is either DriveMode.STOPPED, DriveMode.TURN_IN_PLACE, or DriveMode.DRIVE_FORWARD. It is initialized as None. 
-
-### Driver Functions
-
-#### get_drive_command function
-
-The get_drive_command function is used by many states and its job is to determine the Twist command to send the rover to a desired point. It automatically traverses to intermediate targets if the straight-line path to the ultimate target crosses through one or more FailureZones (see FailureZone and PathPlanner documentation below). 
-
-Its signature is as follows: `def get_drive_command(
-        self: DriveController,
-        target_pos: np.ndarray,
-        rover_pose: SE3,
-        completion_thresh: float,
-        turn_in_place_thresh: float,
-        drive_back: bool = False,
-        path_start: np.ndarray | None = None,
-    ) -> Tuple[Twist, bool]:`
-
-Inputs: 
-
-* The target position (a 3D position vector)
-* The Rovers pose as an SE3 object
-* A completion threshold (in meters)
-* A turn-in place threshold (representing the minimum angle between the rover's direction and the vector towards the target position allowed before we begin driving straight and outside of which we turn in place)
-* drive_back represents whether we are driving backwards or not
-* path_start represents the start of a line segment for path following (optional)
-
-Output:
-
-* A Twist message containing the desired command velocities for the left and right sides of the drivetrain
-* A boolean that is true if the drive is complete and false if it is not complete
-
-Summary of [previous drive algorithm: The previous drive algorithm was quite simple. At a high level, we start by turning to face the (potentially intermediate) target point and then drive straight towards it. This is implemented via calculating first whether we are within the tolerance of facing towards the target (and if we are we add an x component to the output vector) and then calculating a corrective turning factor based on our angular offset from our current direction vector and the vector facing towards the target. This will result in us either driving towards the target while trying to correct for any angular errors if we are within the dot-product tolerance or just simply turning in place until we are within the dot-product tolerance.
-
-However this basic algorithm is not quite enough to get the desired behavior in all cases. In testing we found that the rover tends to oscillate in some situations (namely - when we are driving in the odom frame) this is likely because of latency in the odom frame measurements. This latency is undesirable but some amount is unavoidable so we require workarounds to stop oscillations. The primary one that we settled on was using the intermediate value theorem (IVT). Basically, if the sign of our error changes, we know that we have passed through zero and can essentially just 'give up' right there. We use this for our angular error (which is where the oscillation was) if the sign of our angular error changes: we stop trying to turn in place (even if we are still outside the turn in place threshold).
-
-This is the reason why the function was refactored into a class and the last angular error is maintained. But then why did we build a state machine? It seems like on a surface level this is not that hard of a change to make because we can just add an extra check to our existing logic for not turning anymore. However the problem comes when evaluating the logic for going from driving straight to turning in place. If we continue to use the previous logic of turning in place whenever the angular error is outside of the threshold you end up at exactly the same problem,the sequence of events is as follows: From iteration 1 to 2 you switch angular error signs and then use IVT to recognize that we have done so and start driving straight, the next iteration of the loop (iteration 3) the error is of the same sign as it was in the last one but still outside of turn_in_place_thresh thus we switch to turning in place and once again begin oscillating albeit this time with a iteration in between each swing. To prevent this, we can instead switch to turning_in_place only on the rising edge of the turning error. What this means is we only switch from driving straight to turning in place if the previous error was inside of the tolerance and the current error is outside of the tolerance, this prevents us from oscillating in the aforementioned case because in both cycle 2 and 3 we would have been outside of the tolerance and thus not hit the rising edge.
-
-Here is a diagram showing various situations from time t to t+1 that are and are not rising edge triggers
-![image](https://user-images.githubusercontent.com/20312121/235793667-7607443d-1159-4204-ba41-debbc633723a.png)
-
-All of this logic can be a bit dizzying, so we decided that it would be cleanest and easiest to understand if the drive code was refactored into a state machine. Below is a diagram of the state machine.
-
-<img width="971" alt="image" src="https://user-images.githubusercontent.com/20312121/235797901-afda7bed-eb80-4c40-abb5-7f00bb2e1ab9.png">
-
-The logic in the code is written to follow the state machine diagram. At a high level the rover flows from being stopped until it has a target farther away then completion_distance to turning in place until it is either within angular tolerance or IVT, and then driving towards it until it arrives, with early escapes for arriving and disabling. The actual control logic remains as described above
-
 ## Trajectory
 
 The Trajectory class is an abstract class that we use to represent a planned path that the rover takes. It is made up of a list of coordinates (still an np array) and maintains an internal pointer to the current point that the rover is on in the list. The base functions of getting the current point (`get_current_point`) and incrementing the point (`increment_point`) are implemented in the base class itself. Below is the documentation regarding the SearchTrajectory class.
@@ -340,27 +209,171 @@ y_coords = np.sin(angles) * radii
 vertices = np.hstack((x_coords.reshape(-1, 1), y_coords.reshape(-1, 1)))
 ```
 
+## Path Planning
+
+### A* Algorithm
+
+The navigation system uses a custom A* implementation for path planning with comprehensive costmap integration. At each step, A* evaluates a current node by combining two values: g(n) and h(n).
+
+- `g(n)` - the actual cost to reach the current node `n` from the starting point
+- `h(n)` - a heuristic estimate of the cost from the current node `n` to the ending point
+
+Each node is then given a value based on the following algorithm: `f(n) = g(n) + h(n)`. When making a path A* considers 8 different directions which can be represented by the 8 directions on a compass.
+
+<img width="532" height="485" alt="Screenshot from 2026-08-27 17-22-53" src="https://github.com/user-attachments/assets/dc4cc118-5f5e-4ecf-8213-944a208811fc" />
+
+**Features**:
+- **Costmap Integration**: Uses occupancy grid data for intelligent obstacle avoidance
+- **Heuristic Functions**: Multiple heuristic options optimized for different scenarios
+- **Path Smoothing**: Post-processing algorithms for smoother trajectories
+- **Failure Handling**: Graceful handling of path planning failures with fallback strategies
+
+**Key Classes**:
+- `AStar`: Main path planning algorithm implementation
+- `SpiralEnd`: Exception for spiral completion scenarios
+- `NoPath`: Exception for path planning failure cases
+- `OutOfBounds`: Exception for out-of-bounds coordinate requests
+
+**Algorithm Characteristics**:
+- **Optimal Path Finding**: Guarantees optimal paths when possible
+- **Obstacle Avoidance**: Intelligently routes around detected obstacles
+- **Cost Optimization**: Minimizes traversal cost while maintaining safety
+- **Real-time Performance**: Optimized for real-time navigation requirements
+
+### Path Smoothing
+
+Since A* generates a sequence of grid like points (only considers 8 directions at each node), the sequence it outputs is generally jagged and dense. To improve upon this path, we use post-processing algorithms to give a smoother trajectory. Path smoothing can be found in `smoothing.py` and the function `smoothing()` is used to smooth a given trajectory generated by A*. Within this function there are two post-processing algorithms used. Both are toggleable based on our .yaml files, as well as operator input from the GUI.
+
+### Path Relaxation
+The first post-processing algorithm is path relaxation. Our implementation uses a greedy point-removal algorithm that repeatedly removes points whose removal has the lowest cost. This helps eliminate unnecessary points that would otherwise increase the rover's driving time.
+
+### Path Interpolation
+The second post-processing algorithm is path interpolation. During path interpolation, we fit a curve to the given trajectory and then resample points along that curve. Because A* generates a jagged path, interpolation produces a more finely tuned trajectory.
+
+## DriveController Class
+
+The `DriveController` class is responsible for converting a target position or path into a `Twist` command. It contains two different driving approaches: the Drive Controller State Machine and Adaptive Pure Pursuit. When Pure Pursuit is not used, the Drive Controller uses its internal state machine to determine the rover's driving behavior.
+
+#### get_drive_command function
+
+The get_drive_command function is used by many states and its job is to determine the Twist command to send the rover to a desired point. It automatically traverses to intermediate targets if the straight-line path to the ultimate target crosses through one or more FailureZones (see FailureZone and PathPlanner documentation below). 
+
+Its signature is as follows: `def get_drive_command(
+        self: DriveController,
+        target_pos: np.ndarray | Trajectory,
+        rover_pose: SE3,
+        completion_thresh: float,
+        turn_in_place_thresh: float,
+        drive_back: bool = False,
+        path_start: np.ndarray | None = None,
+        last_point: bool = True,
+    ) -> Tuple[Twist, bool]:`
+
+Inputs: 
+
+* The target position (a 3D position vector) or a Trajectory
+* The Rovers pose as an SE3 object
+* A completion threshold (in meters)
+* A turn-in place threshold (representing the minimum angle between the rover's direction and the vector towards the target position allowed before we begin driving straight and outside of which we turn in place)
+* drive_back represents whether we are driving backwards or not
+* path_start represents the start of a line segment for path following (optional)
+* last_point if a trajectory is given for the target_pos, this parameter is given if the rover is at its last point
+
+Output:
+
+* A Twist message containing the desired command velocities for the left and right sides of the drivetrain
+* A boolean that is true if the drive is complete and false if it is not complete
+
+### Drive Controller State Machine
+
+When the cost map is not being used, we are at the last point in a trajectory, or an operator chooses to disable pure pursuit, the get_drive_command uses our state machine to drive the rover. When using this, the rover has three different states: DriveMode.STOPPED, DriveMode.TURN_IN_PLACE, or DriveMode.DRIVE_FORWARD. The rover never turns and drives forward simultaneously. Although this implementation is relatively simple, it ensures that the rover reaches a given point without oscillating compared to other drive controller approaches.
+
+#### Driver State:
+
+* `last_angular_error (Optional[float])` represents the angular error that was recorded at the most recent call to the get_drive_command function. It is initialized as None
+* `driver_state (DriveMode)` is an enum that is either DriveMode.STOPPED, DriveMode.TURN_IN_PLACE, or DriveMode.DRIVE_FORWARD. It is initialized as None. 
+
+#### Reason for the Drive Controller State Machine
+
+Summary of previous drive algorithm: The previous drive algorithm was quite simple. At a high level, we start by turning to face the (potentially intermediate) target point and then drive straight towards it. This is implemented via calculating first whether we are within the tolerance of facing towards the target (and if we are we add an x component to the output vector) and then calculating a corrective turning factor based on our angular offset from our current direction vector and the vector facing towards the target. This will result in us either driving towards the target while trying to correct for any angular errors if we are within the dot-product tolerance or just simply turning in place until we are within the dot-product tolerance.
+
+However this basic algorithm is not quite enough to get the desired behavior in all cases. In testing we found that the rover tends to oscillate in some situations (namely - when we are driving in the odom frame) this is likely because of latency in the odom frame measurements. This latency is undesirable but some amount is unavoidable so we require workarounds to stop oscillations. The primary one that we settled on was using the intermediate value theorem (IVT). Basically, if the sign of our error changes, we know that we have passed through zero and can essentially just 'give up' right there. We use this for our angular error (which is where the oscillation was) if the sign of our angular error changes: we stop trying to turn in place (even if we are still outside the turn in place threshold).
+
+This is the reason why the function was refactored into a class and the last angular error is maintained. But then why did we build a state machine? It seems like on a surface level this is not that hard of a change to make because we can just add an extra check to our existing logic for not turning anymore. However the problem comes when evaluating the logic for going from driving straight to turning in place. If we continue to use the previous logic of turning in place whenever the angular error is outside of the threshold you end up at exactly the same problem,the sequence of events is as follows: From iteration 1 to 2 you switch angular error signs and then use IVT to recognize that we have done so and start driving straight, the next iteration of the loop (iteration 3) the error is of the same sign as it was in the last one but still outside of turn_in_place_thresh thus we switch to turning in place and once again begin oscillating albeit this time with a iteration in between each swing. To prevent this, we can instead switch to turning_in_place only on the rising edge of the turning error. What this means is we only switch from driving straight to turning in place if the previous error was inside of the tolerance and the current error is outside of the tolerance, this prevents us from oscillating in the aforementioned case because in both cycle 2 and 3 we would have been outside of the tolerance and thus not hit the rising edge.
+
+All of this logic can be a bit dizzying, so we decided that it would be cleanest and easiest to understand if the drive code was refactored into a state machine. Below is a diagram of the state machine.
+
+<img width="971" alt="image" src="https://user-images.githubusercontent.com/20312121/235797901-afda7bed-eb80-4c40-abb5-7f00bb2e1ab9.png">
+
+The logic in the code is written to follow the state machine diagram. At a high level the rover flows from being stopped until it has a target farther away then completion_distance to turning in place until it is either within angular tolerance or IVT, and then driving towards it until it arrives, with early escapes for arriving and disabling. The actual control logic remains as described above.
+
+### Adaptive Pure Pursuit
+
+When we are not using the Drive Controller State Machine we are instead using a version of Pure Pursuit called Adaptive Pure Pursuit. Pure Pursuit is a geometric path tracking built around the idea of "chasing" a lookahead point on the path ahead of it and then computing a curvature and corresponding angular velocity for the rover to drive along a circular arc that will intercept that lookahead point. When describing Pure Pursuit, a circle around the rover is often used to represent the lookahead distance and its intersections with the path.
+
+<img width="692" height="522" alt="Screenshot 2025-10-10 at 9 11 32 PM" src="https://github.com/user-attachments/assets/a914dfdc-40a8-4f55-bc5d-ceb7014d883d" />
+
+When we find the intersection between this circle and the rover's path, we choose the farthest point intersected and have the rover drive towards this point. The exact `Twist` that is generated differs from our Drive Controller State machine. What makes this Pure Pursuit considered adaptive is that the lookahead distance of the rover is not constant. The actual lookahead differs based on the rovers heading towards its target point. The general idea of how the drive controller works is outlined below:
+
+If the heading of the rover directed towards the target point:
+- linear velocity is at its maximum 
+- angular velocity is at a minimum 
+- lookahead distance is at a maximum
+
+If the rovers heading is drastically away from the target point:
+- linear velocity is at its minimum
+- angular velocity is at a maximum
+- lookahead distance is at a minimum
+
+The exact algorithm we used was based off of a document by Purdue. Read more about that [here](https://wiki.purduesigbots.com/software/control-algorithms/basic-pure-pursuit).
+
 ## Arm Controller
-:::note
-Arm Controller has not been merged into main yet. Find it on `nlj/arm-controller`
-:::
 
-The ArmController is a ROS2 node that handles the robotic arm's motion control. It takes high-level commands (like "move the end effector to this position") and converts them into low-level joint commands that the actual arm motors can execute.
+The ArmController is a ROS2 node that handles the robotic arm's motion control. It takes high-level commands (like "move the end effector to this position") and converts them into low-level joint commands that the actual arm motors can execute. The Arm Controller has three main modes: position control, velocity control, and a special "typing" mode.
 
-**What it does:**
-- Converts end effector position/orientation commands into joint angles (inverse kinematics)
-- Converts end effector velocity commands into joint velocities 
-- Tracks the current arm position using forward kinematics
-- Validates that commands are within safe joint limits
-- Supports three modes: position control, velocity control, and a special "typing" mode
-- Publishes the arm's current state to the TF tree for other nodes to use
+### Arm Diagram
 
-**Key features:**
+Our robotic arm has 5 degrees of freedom (DOF), meaning it has 5 separate joints which control the arm's movement. 
+
+<img width="738" height="523" alt="Screenshot from 2026-08-27 17-16-30" src="https://github.com/user-attachments/assets/d9b8a49c-5dea-4973-91d6-89db530901d3" />
+
+<img width="771" height="475" alt="Screenshot from 2026-08-27 17-16-12" src="https://github.com/user-attachments/assets/75682123-dd6f-4d94-a0cc-2813235ff811" />
+
+The following diagrams represent our current arm and have been illustrated to describe its different parts:
+
+- The red line represents Joint A
+- The intersection between the red line and the green line is Joint B 
+- The intersection between the green line and yellow line is Joint C
+- Joint D and E are the two blue cylinders just before the end effector
+
+Each of these joints have separate limits and move the arm in different ways:
+
+- Joint A moves the arm in the Y-axis
+- Joint B and C work in combination to move the arm in the X and Z axis (if we ignore the movement of the end effector)
+- Joint D and E work in combination to change the roll and pitch of the end effector
+
+### Arm IK
+
+One of the main uses of the Arm Controller is Arm IK. IK is an abbreviation for inverse kinematics: a practice used in robotics to calculate the necessary joint positions required to place an end effector (robot's "hand") at a given position. In particular, the Arm Controller can convert end effector position/orientation commands into joint angles.
+
+Another aspect of this is being able to convert velocity commands into joint velocities. This is useful as it enables us to move the arm in the Cartesian space rather than controlling each joint independently. Instead of controlling each joint separately, we are essentially able to move the end effector in directions such as forward, backward, left, right, up, or down. These directions seem simple in practice but this requires moving multiple joints. Try moving your arm in a straight line up and down. Notice how you have to move not only your elbow, but your shoulder as well!
+
+Although Arm IK is important, the Arm Controller has the important responsibility to also monitor the arm: 
+
 - Safety checks to prevent the arm from hitting its limits
 - Automatic velocity scaling if commands are too fast
 - Timeout protection (stops if no commands received for 0.3 seconds)
 - Real-time joint limit validation
-
-Basically, it's the "translator" between high-level arm commands and the actual motor movements needed to execute them safely.
+- Forward kinematics is used to track the arm's current position
+- Arm's current state to the TF tree for other nodes to use
 
 For an in-depth review of the logic refer to this document: [IK.pdf](https://github.com/user-attachments/files/22069295/IK.pdf)
+
+### Click IK
+:::note
+Click IK has not been merged into main yet. Find it on `avb/click-ik`
+:::
+
+Click IK is an extension of the existing Arm IK System that enables intuitive, point-and-click control of the robotic arm enabling operators to click on a point in the camera feed to move the arm's end effector to that location. This system provides a more natural interface for teleoperation, particularly for the ES mission. 
+
+Click IK receives 3D position data from a perception node. The perception node is responsible for converting the clicked pixel coordinates from the GUI into a 3D point using the point cloud. To create this functionality, there is a service within the Arm Controller to determine if a clickable point is within the arm's limits. If this point is within the arms limits, this service will move the arm towards the given point.
