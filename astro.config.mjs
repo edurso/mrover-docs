@@ -244,27 +244,7 @@ export default defineConfig({
               label: 'Navigation',
               collapsed: true,
               items: [
-                { label: 'Navigation', slug: 'autonomy/navigation/overview' },
-                { label: '5-DOF IK', slug: 'autonomy/navigation/5dof-ik' },
-                { label: 'Adaptive Pure Pursuit', slug: 'autonomy/navigation/adaptive-pure-pursuit' },
-                { label: 'Approach Object State', slug: 'autonomy/navigation/approach-object-state' },
-                { label: 'Approach Target Base State', slug: 'autonomy/navigation/approach-target-base-state' },
-                { label: 'Arm IK', slug: 'autonomy/navigation/arm-ik' },
-                { label: 'Arm IK Testing Visualization', slug: 'autonomy/navigation/arm-ik-testing' },
-                { label: 'Arm Velocity Control', slug: 'autonomy/navigation/arm-velocity-control' },
-                { label: 'Click IK', slug: 'autonomy/navigation/click-ik' },
-                { label: 'Cost Map', slug: 'autonomy/navigation/cost-map' },
-                { label: 'Costmap Path Planning', slug: 'autonomy/navigation/costmap-path-planning' },
-                { label: 'Inward Spiraling', slug: 'autonomy/navigation/inward-spiraling' },
-                { label: 'Lander Auto Align', slug: 'autonomy/navigation/lander-auto-align' },
-                { label: 'Navigation State Machine Library', slug: 'autonomy/navigation/state-machine-library' },
-                { label: 'Obstacle Avoidance', slug: 'autonomy/navigation/obstacle-avoidance' },
-                { label: 'Path Execution', slug: 'autonomy/navigation/path-execution' },
-                { label: 'Path Smoothing', slug: 'autonomy/navigation/path-smoothing' },
-                { label: 'Pure Pursuit', slug: 'autonomy/navigation/pure-pursuit' },
-                { label: 'Second Camera Navigation Integration (LongRangeState)', slug: 'autonomy/navigation/second-camera-integration' },
-                { label: 'Stuck Detector', slug: 'autonomy/navigation/stuck-detector' },
-                { label: 'Surface Normals Costmap', slug: 'autonomy/navigation/surface-normals-costmap' }
+                { label: 'Navigation', slug: 'autonomy/navigation/overview' }
               ]
             },
             {
