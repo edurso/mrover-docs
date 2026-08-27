@@ -6,11 +6,11 @@ title: "Teleop Quickstart"
 Once you have completed the installation from the [Install ROS](/general-resources/ros/install-ros/install-ros) page, make sure you are on the `main` branch:
 
 ```bash
-git checkout main
+git switch main
 git pull
 ```
 
-Features are developed on branches checked out from `main` and merged back via pull request. In the mrover home directory, run the following commands:
+Features are developed on branches switched to from `main` and merged back via pull request. In the mrover home directory, run the following commands:
 
 ```bash
 ./build.sh
