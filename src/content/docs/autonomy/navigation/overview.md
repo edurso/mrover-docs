@@ -281,7 +281,7 @@ The navigation system uses a custom A* implementation for path planning with com
 
 Each node is then given a value based on the following algorithm: `f(n) = g(n) + h(n)`. When making a path A* considers 8 different directions which can be represented by the 8 directions on a compass.
 
-<img width="1064" height="970" alt="Screenshot from 2026-08-27 17-22-53" src="https://github.com/user-attachments/assets/dc4cc118-5f5e-4ecf-8213-944a208811fc" />
+<img width="532" height="485" alt="Screenshot from 2026-08-27 17-22-53" src="https://github.com/user-attachments/assets/dc4cc118-5f5e-4ecf-8213-944a208811fc" />
 
 **Features**:
 - **Costmap Integration**: Uses occupancy grid data for intelligent obstacle avoidance
@@ -396,10 +396,9 @@ The ArmController is a ROS2 node that handles the robotic arm's motion control. 
 
 Our robotic arm has 5 degrees of freedom (DOF), meaning it has 5 separate joints which control the arm's movement. 
 
-<img width="1476" height="1047" alt="Screenshot from 2026-08-27 17-16-30" src="https://github.com/user-attachments/assets/d9b8a49c-5dea-4973-91d6-89db530901d3" />
+<img width="738" height="523" alt="Screenshot from 2026-08-27 17-16-30" src="https://github.com/user-attachments/assets/d9b8a49c-5dea-4973-91d6-89db530901d3" />
 
-<img width="1543" height="951" alt="Screenshot from 2026-08-27 17-16-12" src="https://github.com/user-attachments/assets/75682123-dd6f-4d94-a0cc-2813235ff811" />
-
+<img width="771" height="475" alt="Screenshot from 2026-08-27 17-16-12" src="https://github.com/user-attachments/assets/75682123-dd6f-4d94-a0cc-2813235ff811" />
 
 The following diagrams represent our current arm and have been illustrated to describe its different parts:
 
