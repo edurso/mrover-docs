@@ -2,7 +2,6 @@
 title: "Installing Ubuntu"
 sidebar:
   label: "2. Installing Ubuntu"
-  order: 2
 ---
 We officially support **Ubuntu 24.04 LTS (noble) running natively**, and only that. If you're dual-booting, you'll need about 50 GB of space (100 GB if you're on Perception, due to the NVIDIA packages). There are many dual-boot tutorials online if you're not comfortable daily-driving Linux yet.
 

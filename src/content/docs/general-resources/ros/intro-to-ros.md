@@ -2,7 +2,6 @@
 title: "Introduction to ROS"
 sidebar:
   label: "1. Introduction to ROS"
-  order: 1
 ---
 ## What is ROS? 
 ROS is an open source framework for developing robotics software. It is short for robot operating system, but it is not truly an operating system like Ubuntu or Windows. Instead it is "middle-ware" that provides some common things needed for a robotic system. ROS runs on top of Ubuntu Linux. Robots typically run many pieces of software ranging from high level autonomy like computer vision to lower level software like device drivers and control loops. In many cases, this software is even distributed across computing devices such as on peripheral microcontrollers driving sensors or on high powered servers communicating with onboard computers via radio. ROS provides the following capabilities: 

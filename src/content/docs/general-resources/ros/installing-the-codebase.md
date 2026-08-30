@@ -1,8 +1,7 @@
 ---
-title: "Installing the Codebase"
+title: "Native Installation"
 sidebar:
-  label: "3. Installing the Codebase"
-  order: 3
+  label: "Native Installation"
 ---
 This page installs the MRover codebase and its dependencies. If you don't have Ubuntu 24.04 running natively yet, do that first: [Installing Ubuntu](/general-resources/ros/installing-ubuntu).
 

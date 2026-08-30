@@ -1,7 +1,7 @@
 ---
-title: "Portable Install (Unofficial)"
+title: "Portable Installation (Unofficial)"
 sidebar:
-  label: "Portable Install (Unofficial)"
+  label: "Portable Installation (Unofficial)"
 ---
 :::caution
 This path is **unofficial and community-maintained**. Only native Ubuntu 24.04 (see [Installing Ubuntu](/general-resources/ros/installing-ubuntu) and [Installing the Codebase](/general-resources/ros/installing-the-codebase)) is officially supported. Use this only if native Ubuntu genuinely isn't an option — a personal macOS or Arch/Fedora machine, for instance. If you hit a problem here, leads can help on a best-effort basis, but it won't get the same priority as a native install issue.

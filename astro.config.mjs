@@ -47,13 +47,8 @@ export default defineConfig({
         {
           label: 'Setup',
           items: [
-            { label: '1. Introduction to ROS', slug: 'general-resources/ros/intro-to-ros' },
-            { label: '2. Installing Ubuntu', slug: 'general-resources/ros/installing-ubuntu' },
-            { label: '3. Installing the Codebase', slug: 'general-resources/ros/installing-the-codebase' },
-            { label: '4. Fundamentals of ROS', slug: 'general-resources/ros/fundamentals-of-ros' },
-            { label: 'IDE Configuration', slug: 'general-resources/ide-configuration' },
-            { label: 'Portable Install (Unofficial)', slug: 'general-resources/ros/portable-install' },
-            { label: 'ROS Tools: rqt_bag', slug: 'general-resources/ros/ros-tools-rqt-bag' },
+            { label: 'Native Installation', slug: 'general-resources/ros/installing-the-codebase' },
+            { label: 'Portable Installation (Unofficial)', slug: 'general-resources/ros/portable-install' },
           ]
         },
         {
@@ -63,6 +58,17 @@ export default defineConfig({
             { label: 'Best Practices', slug: 'general-resources/best-practices' },
             { label: 'Git', slug: 'general-resources/git' },
             { label: 'I Hate Webdev, How Do I Add a Page', slug: 'general-resources/contributing-to-the-wiki' },
+            { label: 'IDE Configuration', slug: 'general-resources/ide-configuration' },
+            {
+              label: 'ROS & Environment',
+              collapsed: true,
+              items: [
+                { label: '1. Introduction to ROS', slug: 'general-resources/ros/intro-to-ros' },
+                { label: '2. Installing Ubuntu', slug: 'general-resources/ros/installing-ubuntu' },
+                { label: '3. Fundamentals of ROS', slug: 'general-resources/ros/fundamentals-of-ros' },
+                { label: 'ROS Tools: rqt_bag', slug: 'general-resources/ros/ros-tools-rqt-bag' },
+              ]
+            },
             { label: 'Setting up the Jetson', slug: 'general-resources/setting-up-the-jetson' },
             {
               label: 'VM Setup',
