@@ -2,6 +2,9 @@
 title: "macOS VM Setup"
 ---
 :::note
+If you're on macOS, try the [portable (pixi) install](/general-resources/ros/portable-install) first — it runs natively on Apple Silicon without a VM. Use this VM path only as a fallback if that doesn't work for your machine.
+:::
+:::note
 This installation requires at least 40GB of free space but allocating more is highly recommended.
 :::
 1. If you have a Mac with a silicon chip, download this arm server image from [here](https://cdimage.ubuntu.com/releases/jammy/release/). Otherwise download this image [here](https://releases.ubuntu.com/jammy/)
@@ -34,4 +37,4 @@ sudo apt install ubuntu-desktop
 
 15. Run `sudo reboot` and sign into your VM.
 
-16. Now follow the Ubuntu ROS installation steps [here](/general-resources/ros/install-ros/install-ros)
+16. Now follow the codebase installation steps [here](/general-resources/ros/installing-the-codebase)
