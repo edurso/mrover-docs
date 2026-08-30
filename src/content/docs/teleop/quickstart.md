@@ -3,7 +3,7 @@ title: "Teleop Quickstart"
 ---
 ## Additional resources: [Vue](/teleop/vue-introduction), [Tailwind](/teleop/tailwind-introduction)
 
-Once you have completed the installation from the [Installing the Codebase](/general-resources/ros/installing-the-codebase) page, make sure you are on the `main` branch:
+Once you have completed the installation from the [Installing the Codebase](/setup/installing-the-codebase) page, make sure you are on the `main` branch:
 
 ```bash
 git switch main

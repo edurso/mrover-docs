@@ -17,4 +17,4 @@ When you complete the project you will have a rover that uses its localization s
 
 Use the `mrover` command to jump into the repo.
 
-Follow the setup instructions [here](/general-resources/ros/installing-the-codebase) to setup up the codebase. Note the following folder `./starter_project`, this is where the majority of the work will be done.
+Follow the setup instructions [here](/setup/installing-the-codebase) to setup up the codebase. Note the following folder `./starter_project`, this is where the majority of the work will be done.

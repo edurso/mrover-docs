@@ -2,9 +2,9 @@
 title: "Setting up the Jetson"
 ---
 :::caution
-This page is out of date — flashing now happens through `ansible/roles/jetson_flash` (see `ansible/jetson_flash.yml` in `mrover-ros2`), not NVIDIA SDKManager. Someone on ESW with access to a Jetson needs to rewrite this against the actual ansible role's steps and verify the recovery-mode boot sequence still matches. Until then, treat this page as unreliable.
+This page is out of date. Flashing now happens through `ansible/roles/jetson_flash` (see `ansible/jetson_flash.yml` in `mrover-ros2`), not NVIDIA SDKManager. Someone on ESW with access to a Jetson needs to rewrite this against the actual ansible role's steps and verify the recovery-mode boot sequence still matches. Until then, treat this page as unreliable.
 
-For everyday dev setup (not initial flashing), just run `./setup.sh` from the repo on the Jetson itself — it detects the Jetson automatically.
+For everyday dev setup (not initial flashing), just run `./setup.sh` from the repo on the Jetson itself; it detects the Jetson automatically.
 :::
 ## Download NVIDIA SDKManager on the Host Computer
 

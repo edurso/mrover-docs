@@ -47,8 +47,10 @@ export default defineConfig({
         {
           label: 'Setup',
           items: [
-            { label: 'Native Installation', slug: 'general-resources/ros/installing-the-codebase' },
-            { label: 'Portable Installation (Unofficial)', slug: 'general-resources/ros/portable-install' },
+            { label: 'Getting Started', slug: 'setup/getting-started' },
+            { label: 'Installing Ubuntu', slug: 'setup/installing-ubuntu' },
+            { label: 'Native Installation', slug: 'setup/installing-the-codebase' },
+            { label: 'Portable Installation', slug: 'setup/portable-install' },
           ]
         },
         {
@@ -57,15 +59,14 @@ export default defineConfig({
           items: [
             { label: 'Best Practices', slug: 'general-resources/best-practices' },
             { label: 'Git', slug: 'general-resources/git' },
-            { label: 'I Hate Webdev, How Do I Add a Page', slug: 'general-resources/contributing-to-the-wiki' },
+            { label: 'Contributing to the wiki', slug: 'general-resources/contributing-to-the-wiki' },
             { label: 'IDE Configuration', slug: 'general-resources/ide-configuration' },
             {
               label: 'ROS & Environment',
               collapsed: true,
               items: [
                 { label: '1. Introduction to ROS', slug: 'general-resources/ros/intro-to-ros' },
-                { label: '2. Installing Ubuntu', slug: 'general-resources/ros/installing-ubuntu' },
-                { label: '3. Fundamentals of ROS', slug: 'general-resources/ros/fundamentals-of-ros' },
+                { label: '2. Fundamentals of ROS', slug: 'general-resources/ros/fundamentals-of-ros' },
                 { label: 'ROS Tools: rqt_bag', slug: 'general-resources/ros/ros-tools-rqt-bag' },
               ]
             },

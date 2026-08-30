@@ -1,7 +1,7 @@
 ---
 title: "Fundamentals of ROS"
 sidebar:
-  label: "3. Fundamentals of ROS"
+  label: "2. Fundamentals of ROS"
 ---
 Here are some things to know about ROS
 

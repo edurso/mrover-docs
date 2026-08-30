@@ -4,7 +4,7 @@ title: "Software Starter Project 2025-26"
 
 # Drone Software Starter Project
 
-This year, we are looking to develop capabilities for the drone to operate autonomously during the URC missions. The aim of the drone software starter project is to familiarize you with the key frameworks and software tools we will use to operate the drone and implement capability for autonomous flight. Once you have installed [all necessary software](/general-resources/ros/installing-the-codebase), proceed through the sections of this page to complete the starter project.
+This year, we are looking to develop capabilities for the drone to operate autonomously during the URC missions. The aim of the drone software starter project is to familiarize you with the key frameworks and software tools we will use to operate the drone and implement capability for autonomous flight. Once you have installed [all necessary software](/setup/installing-the-codebase), proceed through the sections of this page to complete the starter project.
 
 ## ROS2 Introduction
 

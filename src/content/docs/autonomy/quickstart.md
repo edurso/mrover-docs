@@ -1,7 +1,7 @@
 ---
 title: "Autonomy Quickstart"
 ---
-This assumes that you have already installed (and verified) ROS for our system if not follow this [tutorial](/general-resources/ros/installing-the-codebase) 
+This assumes that you have already installed (and verified) ROS for our system if not follow this [tutorial](/setup/installing-the-codebase) 
 
 This tutorial will take you through starting up the autonomy system and running the navigation code to hopefully be able to see the rover run in simulation.
 

@@ -3,11 +3,11 @@ title: "Native Installation"
 sidebar:
   label: "Native Installation"
 ---
-This page installs the MRover codebase and its dependencies. If you don't have Ubuntu 24.04 running natively yet, do that first: [Installing Ubuntu](/general-resources/ros/installing-ubuntu).
+This page installs the MRover codebase and its dependencies. If you don't have Ubuntu 24.04 running natively yet, do that first: [Installing Ubuntu](/setup/installing-ubuntu).
 
-If you're on a Jetson, use the exact same instructions below — `setup.sh` detects it automatically (via `/etc/nv_tegra_release`) and installs the Jetson-specific packages instead of the desktop ones.
+If you're on a Jetson, use the exact same instructions below. `setup.sh` detects it automatically (via `/etc/nv_tegra_release`) and installs the Jetson-specific packages instead of the desktop ones.
 
-Not on native Ubuntu (macOS, Arch, Fedora, ...)? See the unofficial [Portable Install](/general-resources/ros/portable-install) instead — don't use it just because it sounds more convenient, though; if something breaks there, you're on your own more than usual.
+Not on native Ubuntu (macOS, Arch, Fedora, ...)? See the unofficial [Portable Installation](/setup/portable-install) instead, don't use it just because it sounds more convenient, though; if something breaks there, you're on your own more than usual.
 
 ## Set Up Your SSH Key
 
@@ -30,7 +30,7 @@ mrover
 ./build.sh
 ```
 
-`mrover` jumps you into the repo and activates the build overlay — you'll want to run it in every new terminal you use for MRover work. There's no separate workspace to `cd` into anymore: the repo you cloned _is_ the workspace.
+`mrover` jumps you into the repo and activates the build overlay. You'll want to run it in every new terminal you use for MRover work. There's no separate workspace to `cd` into anymore: the repo you cloned _is_ the workspace.
 
 ## Sanity Check
 
