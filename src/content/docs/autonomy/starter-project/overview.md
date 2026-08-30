@@ -15,6 +15,6 @@ When you complete the project you will have a rover that uses its localization s
 
 # Getting Started
 
-Use the `mrover` command to navigate to `~/ros2_ws/src/mrover`:
+Use the `mrover` command to jump into the repo.
 
-Follow the setup instructions [here](/general-resources/ros/install-ros/install-ros) to setup up the codebase. Note the following folder `./starter_project`, this is where the majority of the work will be done.
+Follow the setup instructions [here](/general-resources/ros/installing-the-codebase) to setup up the codebase. Note the following folder `./starter_project`, this is where the majority of the work will be done.
