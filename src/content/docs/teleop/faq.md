@@ -15,13 +15,7 @@ ModuleNotFoundError: No module named 'rclpy'
 
 Enter `mrover` before trying to run the basestation.
 
-You have not entered the Python virtual environment. To enter the python venv, enter `mrover` in the shell. This macro runs:
-
-```bash
-cd ~/ros2_ws/src/mrover && source ~/ros2_ws/src/mrover/venv/bin/activate
-```
-
-which opens the python virtual environment and allows you to run the basestation.
+You have not entered the Python virtual environment. To enter the python venv, enter `mrover` in the shell. This function jumps into the repo and activates the build overlay, which opens the python virtual environment and allows you to run the basestation.
 
 ---
 
@@ -106,7 +100,7 @@ sudo apt-get install libeigen3-dev
 cd && git clone https://github.com/artivis/manif.git
 cd manif
 python3 -m pip install .
-cd ~/ros2_ws/src/mrover
+mrover
 git submodule update --init deps/manif
 ```
 
