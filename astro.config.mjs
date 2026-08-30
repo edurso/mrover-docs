@@ -57,9 +57,10 @@ export default defineConfig({
               collapsed: true,
               items: [
                 { label: '1. Introduction to ROS', slug: 'general-resources/ros/intro-to-ros' },
-                { label: '2. Install ROS', slug: 'general-resources/ros/install-ros/install-ros' },
-                { label: '3. Fundamentals of ROS', slug: 'general-resources/ros/fundamentals-of-ros' },
-                { label: 'Install ROS on macOS', slug: 'general-resources/ros/install-ros/install-ros-macos' },
+                { label: '2. Installing Ubuntu', slug: 'general-resources/ros/installing-ubuntu' },
+                { label: '3. Installing the Codebase', slug: 'general-resources/ros/installing-the-codebase' },
+                { label: '4. Fundamentals of ROS', slug: 'general-resources/ros/fundamentals-of-ros' },
+                { label: 'Portable Install (Unofficial)', slug: 'general-resources/ros/portable-install' },
                 { label: 'ROS Tools: rqt_bag', slug: 'general-resources/ros/ros-tools-rqt-bag' },
                 { label: 'Setting up the Jetson', slug: 'general-resources/setting-up-the-jetson' },
               ]
