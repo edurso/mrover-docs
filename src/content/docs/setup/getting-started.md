@@ -14,6 +14,8 @@ Ubuntu 24.04 LTS or Kubuntu 24.04 LTS running natively is the ***only officially
 - [Native Installation](/setup/installing-the-codebase): clones the repo and installs ROS, the toolchain, and your dev environment.
 :::
 
+---
+
 ## Portable Installation - Unofficial
 
 Runs the codebase through a pixi-managed environment on macOS or another Linux distribution that is not Ubuntu 24. Current supported distribution families include:
@@ -28,3 +30,7 @@ This path is maintained by software leadership and is ***best-effort only***. Do
 :::tip[Continue with:]
 - [Portable Installation](/setup/portable-install)
 :::
+
+---
+
+Be aware that Windows is ***NOT*** supported. WSL testing on the portable installation is very limited. Our expectation for anyone with a windows laptop is to install Linux. 
