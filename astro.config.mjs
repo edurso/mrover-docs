@@ -7,9 +7,7 @@ import rehypeKatex from 'rehype-katex';
 import { unified } from '@astrojs/markdown-remark';
 
 export default defineConfig({
-  // site: 'https://docs.mrover.org',
-  site: 'https://edurso.github.com/mrover-docs/',
-  base: '/mrover-docs',
+  site: 'https://docs.mrover.org',
   markdown: {
     processor: unified({ remarkPlugins: [remarkMath], rehypePlugins: [rehypeKatex] }),
   },
