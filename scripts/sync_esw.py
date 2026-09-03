@@ -24,6 +24,10 @@ CONFIG = REPO / "astro.config.mjs"
 START = "// ESW_SIDEBAR_START"
 END = "// ESW_SIDEBAR_END"
 
+# dead relative links are pointed back at the source repo, a leftover `.md` link would
+# otherwise trip starlight-links-validator's errorOnRelativeLinks and fail the build
+UPSTREAM = "https://github.com/umrover/mrover-esw/blob/main/docs"
+
 # map zensical -> starlight, default to !!! TODO (unlisted)
 ASIDE = {
     "note": "note",
@@ -40,6 +44,15 @@ LINK = re.compile(r"\]\(([^)\s]+\.md)(#[^)\s]*)?\)")
 EXTERNAL = re.compile(r"^([a-z]+:|/)", re.IGNORECASE)
 ADMONITION = re.compile(r'^(?:!!!|\?\?\?\+?)\s+(\w+)(?:\s+"(.*)")?\s*$')
 FENCE = re.compile(r"^\s*(```|~~~)")
+FRONTMATTER = re.compile(r"^---\s*\n(.*?)\n---\s*\n?", re.DOTALL)
+TITLE_KEY = re.compile(r"^title\s*:", re.MULTILINE)
+
+WARNINGS: list[str] = []
+
+
+def _warn(message: str) -> None:
+    WARNINGS.append(message)
+    print(f"warn: {message}", file=sys.stderr)
 
 
 def _slug_of(rel: str) -> str:
@@ -54,29 +67,59 @@ def _slug_of(rel: str) -> str:
     return f"esw/{trimmed}".rstrip("/")
 
 
-def _frontmatter(md: str):
+def _title_from_path(rel: str) -> str:
     """
-    lift header (`# title`) to starlight frontmatter, return None if no H1
+    last-resort title, `info/stm32-boot.md` -> `Stm32 Boot`, `a/b/index.md` -> `B`
     """
-    lines = md.split("\n")
+    stem = posixpath.basename(rel)[: -len(".md")]
+    if stem == "index":
+        parent = posixpath.dirname(rel)
+        stem = posixpath.basename(parent) if parent else "home"
+    return re.sub(r"[-_]+", " ", stem).strip().title() or "Untitled"
+
+
+def _frontmatter(md: str, rel: str, labels: dict):
+    """
+    normalize a page to starlight frontmatter, always succeeds
+
+    title precedence: existing frontmatter -> leading `# title` -> nav label -> file name
+    """
+    existing = FRONTMATTER.match(md)
+    if existing:
+        body = md[existing.end() :]
+        if TITLE_KEY.search(existing.group(1)):
+            return None, md  # already has what starlight needs, pass it through
+        block = existing.group(1)
+    else:
+        body, block = md, None
+
+    lines = body.split("\n")
     i = 0
     while i < len(lines) and not lines[i].strip():
         i += 1
     match = HEADING.match(lines[i]) if i < len(lines) else None
-    if not match:
-        return None
-    # titles are not markdown-processed, so undo escapes: `STM32Cube\*` -> `STM32Cube*`.
-    title = re.sub(r"\\([^A-Za-z0-9])", r"\1", match.group(1))
-    body = "\n".join(lines[i + 1 :]).lstrip("\n")
+
+    if match:
+        # titles are not markdown-processed, so undo escapes: `STM32Cube\*` -> `STM32Cube*`
+        title = re.sub(r"\\([^A-Za-z0-9])", r"\1", match.group(1))
+        body = "\n".join(lines[i + 1 :]).lstrip("\n")
+    else:
+        title = labels.get(rel) or _title_from_path(rel)
+        detail = "file is empty" if not md.strip() else "no leading '# title'"
+        _warn(f"{rel}: {detail}, using title {title!r}")
+
     # json string is a yaml double-quoted scalar
-    return title, f"---\ntitle: {json.dumps(title)}\n---\n\n{body}"
+    header = f"title: {json.dumps(title)}"
+    if block:
+        header = f"{block}\n{header}"
+    return title, f"---\n{header}\n---\n\n{body}"
 
 
 def _rewrite_links(md: str, rel: str, exists=lambda target: True):
     """
     rewrite `.md` links to starlight slugs
 
-    abort on miss, do not keep invalid links
+    a target that does not exist is sent to the source repo on github rather than dropped
     """
     directory = posixpath.dirname(rel)
     count = 0
@@ -87,9 +130,10 @@ def _rewrite_links(md: str, rel: str, exists=lambda target: True):
         if EXTERNAL.match(target):
             return match.group(0)
         resolved = posixpath.normpath(posixpath.join(directory, target))
-        if not exists(resolved):
-            sys.exit(f"{rel}: link to missing file {target}")
         count += 1
+        if not exists(resolved):
+            _warn(f"{rel}: link to missing file {target}, pointing it upstream")
+            return f"]({UPSTREAM}/{resolved})"
         return f"](/{_slug_of(resolved)}{anchor})"
 
     return LINK.sub(replace, md), count
@@ -148,19 +192,49 @@ def _convert_admonitions(md: str):
     return "\n".join(out), count
 
 
-def _sidebar_item(entry, titles: dict) -> dict:
+def _nav_labels(nav) -> dict:
     """
-    zensical `nav` -> starlight sidebar
+    flatten the zensical nav into {path: label}, used as a title fallback
+    """
+    labels = {}
+
+    def walk(entry):
+        if isinstance(entry, str):
+            return
+        label, value = next(iter(entry.items()))
+        if isinstance(value, str):
+            labels[value] = label
+        else:
+            for child in value:
+                walk(child)
+
+    for entry in nav:
+        walk(entry)
+    return labels
+
+
+def _sidebar_item(entry, titles: dict, pages: set):
+    """
+    zensical `nav` -> starlight sidebar, returns None for an entry with nothing to point at
     """
     if isinstance(entry, str):
+        if entry not in pages:
+            _warn(f"nav references missing page {entry}, dropping it from the sidebar")
+            return None
         return {"label": titles.get(entry, entry), "slug": _slug_of(entry)}
+
     label, value = next(iter(entry.items()))
     if isinstance(value, str):
+        if value not in pages:
+            _warn(f"nav references missing page {value}, dropping it from the sidebar")
+            return None
         return {"label": label, "slug": _slug_of(value)}
-    return {
-        "label": label,
-        "items": [_sidebar_item(child, titles) for child in value],
-    }
+
+    items = [item for item in (_sidebar_item(c, titles, pages) for c in value) if item]
+    if not items:
+        _warn(f"nav section {label!r} has no valid pages, dropping it from the sidebar")
+        return None
+    return {"label": label, "items": items}
 
 
 def _quote(text: str) -> str:
@@ -188,6 +262,8 @@ def _render_item(item: dict, indent: int) -> str:
 def _splice_sidebar(config: str, block: dict) -> str:
     """
     replace everything between the markers, keeping their indentation
+
+    this one still aborts, a missing marker is a bug in this repo, not bad upstream input
     """
     lines = config.split("\n")
     starts = [i for i, line in enumerate(lines) if line.strip() == START]
@@ -210,6 +286,9 @@ def main(argv: list[str]) -> None:
     with (esw / "zensical.toml").open("rb") as handle:
         zensical = tomllib.load(handle)
 
+    nav = zensical["project"]["nav"]
+    labels = _nav_labels(nav)
+
     files = sorted(
         path.relative_to(src_docs).as_posix() for path in src_docs.rglob("*") if path.is_file()
     )
@@ -226,11 +305,11 @@ def main(argv: list[str]) -> None:
             shutil.copyfile(src_docs / rel, destination)
             continue
 
-        lifted = _frontmatter((src_docs / rel).read_text(encoding="utf-8"))
-        if lifted is None:
-            sys.exit(f"{rel}: no leading '# Title' to lift into frontmatter")
-        title, text = lifted
-        titles[rel] = title
+        title, text = _frontmatter(
+            (src_docs / rel).read_text(encoding="utf-8"), rel, labels
+        )
+        if title:
+            titles[rel] = title
 
         text, count = _rewrite_links(text, rel, markdown.__contains__)
         links += count
@@ -238,7 +317,7 @@ def main(argv: list[str]) -> None:
         asides += count
         destination.write_text(text, encoding="utf-8")
 
-    items = [_sidebar_item(entry, titles) for entry in zensical["project"]["nav"]]
+    items = [item for item in (_sidebar_item(e, titles, markdown) for e in nav) if item]
     block = {"label": "ESW", "items": items}
     CONFIG.write_text(
         _splice_sidebar(CONFIG.read_text(encoding="utf-8"), block), encoding="utf-8"
@@ -249,6 +328,8 @@ def main(argv: list[str]) -> None:
         f"rewrote {links} links, converted {asides} admonitions, "
         f"{len(items)} top-level nav sections"
     )
+    if WARNINGS:
+        print(f"{len(WARNINGS)} warning(s), see above")
 
 
 if __name__ == "__main__":
