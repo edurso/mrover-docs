@@ -4,6 +4,12 @@ title: "I Hate Webdev, How Do I Add a Page"
 
 This docs site is built with [Astro Starlight](https://starlight.astro.build/). Pages are just Markdown files. You don't need to know any web stuff.
 
+:::caution[ESW Docs Live In ESW Repo]
+`src/content/docs/esw/` and the ESW sidebar block in `astro.config.mjs` are generated from
+[umrover/mrover-esw](https://github.com/umrover/mrover-esw)'s `docs/` directory. Edit ESW docs
+there, anything you change under `esw/` here is overwritten the next time that repo deploys.
+:::
+
 ## 1. Create a Markdown file
 
 Add a `.md` file under `src/content/docs/` wherever appropriate:

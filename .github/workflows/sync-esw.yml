@@ -1,0 +1,80 @@
+name: sync esw docs
+
+# esw docs are authored in umrover/mrover-esw
+# the esw repo will fire a repository_dispatch to force
+# re-generation and deployment of this docs platform
+on:
+  repository_dispatch:
+    types: [esw-docs-updated]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+# prevent races with deploy.yml
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: mint an app token
+        id: token
+        uses: actions/create-github-app-token@v2
+        with:
+          app-id: ${{ vars.DOCS_SYNC_APP_ID }}
+          private-key: ${{ secrets.DOCS_SYNC_APP_PRIVATE_KEY }}
+
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          token: ${{ steps.token.outputs.token }}
+
+      # NOTE if mrover-esw is ever made private, auth needed here
+      - uses: actions/checkout@v4
+        with:
+          repository: umrover/mrover-esw
+          ref: main
+          path: .esw-src
+
+      - name: setup bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: install dependencies
+        run: bun install --frozen-lockfile
+
+      # runner python sufficient (stdlib only)
+      - name: sync esw docs
+        run: python3 scripts/sync_esw.py .esw-src
+
+      # defaults the committer to github-actions[bot], skips commit when nothing changed
+      - name: commit
+        uses: stefanzweifel/git-auto-commit-action@v7
+        with:
+          commit_message: "docs: sync esw docs from umrover/mrover-esw@${{ github.event.client_payload.sha || 'main' }}"
+          file_pattern: astro.config.mjs src/content/docs/esw
+
+      - name: build
+        run: bun run build
+
+      - name: upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: sync
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: deploy to pages
+        id: deployment
+        uses: actions/deploy-pages@v4
