@@ -83,6 +83,67 @@ export default defineConfig({
           ]
         },
         // ESW_SIDEBAR_START
+        {
+          label: 'ESW',
+          collapsed: true,
+          items: [
+            { label: 'Home', slug: 'esw' },
+            {
+              label: 'Getting Started',
+              collapsed: true,
+              items: [
+                { label: 'Introduction', slug: 'esw/getting-started/intro' },
+                { label: 'STM32Cube', slug: 'esw/getting-started/stm32cube' },
+                {
+                  label: 'Starter Projects',
+                  collapsed: true,
+                  items: [
+                    { label: 'LED', slug: 'esw/getting-started/starter/led' },
+                    {
+                      label: 'Servo',
+                      collapsed: true,
+                      items: [
+                        { label: 'Part 1 - PWM', slug: 'esw/getting-started/starter/servo/part1-pwm' },
+                        { label: 'Part 2 - CAN', slug: 'esw/getting-started/starter/servo/part2-can' }
+                      ]
+                    },
+                    { label: 'Temp-Humidity', slug: 'esw/getting-started/starter/temp-humidity' }
+                  ]
+                }
+              ]
+            },
+            {
+              label: 'Projects',
+              collapsed: true,
+              items: [
+                { label: 'ESW 2025-2026 Projects', slug: 'esw/projects/overview26' }
+              ]
+            },
+            {
+              label: 'Useful Information',
+              collapsed: true,
+              items: [
+                { label: 'Build Tools', slug: 'esw/info/build' },
+                { label: 'Timers', slug: 'esw/info/timers' },
+                { label: 'Communication Protocols', slug: 'esw/info/communication-protocols' },
+                { label: 'Brushed Motors', slug: 'esw/info/brushed' },
+                { label: 'Brushless Motors', slug: 'esw/info/brushless' },
+                { label: 'Science', slug: 'esw/info/science' },
+                { label: 'Nucleo Information', slug: 'esw/info/nucleos' },
+                { label: 'STM32 Boot', slug: 'esw/info/stm32-boot' }
+              ]
+            },
+            {
+              label: 'Extra Information',
+              collapsed: true,
+              items: [
+                { label: 'CMake with CubeMX', slug: 'esw/extra/cmake-cubemx' },
+                { label: 'Building These Docs', slug: 'esw/extra/build-docs' },
+                { label: 'Archived Docs', slug: 'esw/extra/archive' }
+              ]
+            }
+          ]
+        },
         // ESW_SIDEBAR_END
         {
           label: 'Teleop',
