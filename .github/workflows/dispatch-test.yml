@@ -1,0 +1,20 @@
+name: dispatch test
+on:
+  workflow_dispatch:
+
+jobs:
+  fire:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/create-github-app-token@v2
+        id: token
+        with:
+          app-id: ${{ vars.DOCS_SYNC_APP_ID }}
+          private-key: ${{ secrets.DOCS_SYNC_APP_PRIVATE_KEY }}
+
+      - env:
+          GH_TOKEN: ${{ steps.token.outputs.token }}
+        run: |
+          gh api repos/${{ github.repository }}/dispatches \
+            -f event_type=esw-docs-updated \
+            -F client_payload[sha]=deadbeef
